@@ -11,6 +11,7 @@ import WindowPage from "./pages/WindowPage/WindowPage";
 import SchedulePage from "./pages/SchedulePage/SchedulePage";
 import InfoPage from "./pages/InfoPage/InfoPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
+import KakaRedirect from "./pages/LoginPage/KakaoRedirect";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/window" element={<WindowPage />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/info" element={<InfoPage />} />
+        <Route path="/login/kakao" element={<KakaRedirect />} />
       </Routes>
       <Navbar />
     </div>
