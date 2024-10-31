@@ -1,7 +1,6 @@
 #root {
-  max-width: 1280px;
+  width: 100%; /* 화면 크기에 맞춰 넓이 조정 */
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
