@@ -2,10 +2,14 @@ package com.window.domain.place.entity;
 
 import com.window.domain.member.entity.Member;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Place {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

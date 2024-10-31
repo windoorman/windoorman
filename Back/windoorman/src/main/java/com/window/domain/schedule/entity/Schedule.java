@@ -1,7 +1,7 @@
 package com.window.domain.schedule.entity;
 
 import com.window.domain.member.entity.Member;
-import com.window.domain.window.entity.Window;
+import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
@@ -18,7 +18,7 @@ public class Schedule {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "window_id")
-    private Window window;
+    private Windows windows;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
