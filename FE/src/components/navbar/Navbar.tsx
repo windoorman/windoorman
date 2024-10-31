@@ -24,7 +24,7 @@ const Navbar = () => {
     },
     {
       path: "/info",
-      label: "주변 정보",
+      label: "정보",
       icon: Profile,
       activeIcon: ActiveProfile,
     },

@@ -13,7 +13,7 @@ const HomeMain = () => {
             <h2>집이 없어요!</h2>
           </div>
           <div>
-            <button className="bg-[#3C4973] rounded-full w-full py-1 mt-4">
+            <button className="bg-[#3752A6] rounded-full w-full py-1 mt-4">
               <span className="text-white text-sm font-semibold">
                 집 등록하기
               </span>

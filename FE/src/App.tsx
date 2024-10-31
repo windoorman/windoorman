@@ -4,7 +4,6 @@ import {
   Routes,
   Route,
   useLocation,
-  useMatch,
 } from "react-router-dom";
 import Navbar from "./components/navbar/Navbar";
 import WindowPage from "./pages/WindowPage/WindowPage";
@@ -14,6 +13,10 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import KakaRedirect from "./pages/LoginPage/KakaoRedirect";
 
 function App() {
+  const location = useLocation();
+
+  const hideNavbar = ["/", "/login/kakao"].includes(location.pathname);
+
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <Routes>
@@ -23,7 +26,7 @@ function App() {
         <Route path="/info" element={<InfoPage />} />
         <Route path="/login/kakao" element={<KakaRedirect />} />
       </Routes>
-      <Navbar />
+      {!hideNavbar && <Navbar />}
     </div>
   );
 }
