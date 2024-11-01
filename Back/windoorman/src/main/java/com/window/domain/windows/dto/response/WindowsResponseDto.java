@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WindowsResponseDto {
 
-    private Long WindowId;
+    private Long windowsId;
     private String name;
     private String raspberryId;
     private boolean isAuto;

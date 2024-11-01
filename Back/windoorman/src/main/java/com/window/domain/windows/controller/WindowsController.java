@@ -34,9 +34,9 @@ public class WindowsController {
         return ResponseEntity.ok(windows);
     }
 
-    @GetMapping("/detail/{windowId}")
-    public ResponseEntity<?> getWindow(@PathVariable Long windowId) {
-        WindowsDetailResponseDto dto = windowService.getWindowInfo(windowId);
+    @GetMapping("/detail/{windowsId}")
+    public ResponseEntity<?> getWindow(@PathVariable Long windowsId) {
+        WindowsDetailResponseDto dto = windowService.getWindowInfo(windowsId);
 
         return ResponseEntity.ok(dto);
     }
@@ -56,9 +56,9 @@ public class WindowsController {
         return ResponseEntity.status(200).body("수정");
     }
 
-    @DeleteMapping("/{windowId}")
-    public ResponseEntity<?> deleteWindow(@PathVariable Long windowId){
-        windowService.deleteWindow(windowId);
+    @DeleteMapping("/{windowsId}")
+    public ResponseEntity<?> deleteWindow(@PathVariable Long windowsId){
+        windowService.deleteWindow(windowsId);
 
         return ResponseEntity.status(200).body("삭제");
     }

@@ -11,13 +11,13 @@ public interface WindowsService {
 
     Map<String, Object> getWindows(Long placeId);
 
-    WindowsDetailResponseDto getWindowInfo(Long windowId);
+    WindowsDetailResponseDto getWindowInfo(Long windowsId);
 
     void registerWindow(WindowsRequestDto dto);
 
     void updateWindow(WindowsUpdateRequestDto dto);
 
-    void deleteWindow(Long windowId);
+    void deleteWindow(Long windowsId);
 
     void changeToggle(WindowsToggleRequestDto dto);
 }

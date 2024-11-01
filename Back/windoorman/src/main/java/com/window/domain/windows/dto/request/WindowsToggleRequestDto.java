@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class WindowsToggleRequestDto {
-    private Long windowId;
+    private Long windowsId;
     private Boolean isAuto;
 }

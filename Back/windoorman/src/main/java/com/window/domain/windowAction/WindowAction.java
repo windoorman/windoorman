@@ -15,7 +15,7 @@ public class WindowAction {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "window_id")
+    @JoinColumn(name = "windows_id")
     private Windows windows;
 
     @Enumerated(EnumType.STRING)

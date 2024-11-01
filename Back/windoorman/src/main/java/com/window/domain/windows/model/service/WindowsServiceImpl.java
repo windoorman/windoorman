@@ -42,8 +42,8 @@ public class WindowsServiceImpl implements WindowsService {
     }
 
     @Override
-    public WindowsDetailResponseDto getWindowInfo(Long windowId) {
-        Windows window = windowsRepository.findById(windowId)
+    public WindowsDetailResponseDto getWindowInfo(Long windowsId) {
+        Windows window = windowsRepository.findById(windowsId)
                 .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다"));
 
         // 실제로 센서에서 데이터 가져오면 그 데이터를 넣기
@@ -51,7 +51,7 @@ public class WindowsServiceImpl implements WindowsService {
 
         return WindowsDetailResponseDto.builder()
                 .placeName("우리집")
-                .windowId(windowId)
+                .windowsId(windowsId)
                 .name(window.getName())
                 .sensorData(sensorDataDto).build();
     }
@@ -95,7 +95,7 @@ public class WindowsServiceImpl implements WindowsService {
 
     @Override
     public void updateWindow(WindowsUpdateRequestDto dto) {
-        Windows windows = windowsRepository.findById(dto.getWindowId())
+        Windows windows = windowsRepository.findById(dto.getWindowsId())
                 .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다."));
 
 
@@ -113,17 +113,17 @@ public class WindowsServiceImpl implements WindowsService {
     }
 
     @Override
-    public void deleteWindow(Long windowId) {
-        Windows window = windowsRepository.findById(windowId)
+    public void deleteWindow(Long windowsId) {
+        Windows window = windowsRepository.findById(windowsId)
                 .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다."));
 
-        windowsRepository.deleteById(windowId);
+        windowsRepository.deleteById(windowsId);
 
     }
 
     @Override
     public void changeToggle(WindowsToggleRequestDto dto) {
-        Windows window = windowsRepository.findById(dto.getWindowId())
+        Windows window = windowsRepository.findById(dto.getWindowsId())
                 .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다."));
         log.info("isAuto: {}", dto.getIsAuto());
         window.autoUpdateWindow(dto);

@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 public class WindowsDetailResponseDto {
 
     @Builder
-    public WindowsDetailResponseDto(String placeName, Long windowId, String name, SensorDataDto sensorData) {
+    public WindowsDetailResponseDto(String placeName, Long windowsId, String name, SensorDataDto sensorData) {
         this.placeName = placeName;
-        this.windowId = windowId;
+        this.windowsId = windowsId;
         this.name = name;
         this.sensorData = sensorData;
     }
 
     private String placeName;
-    private Long windowId;
+    private Long windowsId;
     private String name;
     SensorDataDto sensorData;
 

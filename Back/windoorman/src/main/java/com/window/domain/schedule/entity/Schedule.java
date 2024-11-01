@@ -17,7 +17,7 @@ public class Schedule {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "window_id")
+    @JoinColumn(name = "windows_id")
     private Windows windows;
 
     @ManyToOne(fetch = FetchType.LAZY)
