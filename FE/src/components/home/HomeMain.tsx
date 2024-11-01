@@ -1,6 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import sadGhost from "../../assets/window/mynaui_sad-ghost-solid.png";
 
 const HomeMain = () => {
+  const navigate = useNavigate();
+
+  const onClick = () => {
+    navigate("/home/regist");
+    console.log("집 등록하기 버튼 클릭");
+  };
+
   return (
     <div>
       <div className="mt-8 pt-2 border-t-2 rounded-3xl">
@@ -13,7 +21,10 @@ const HomeMain = () => {
             <h2>집이 없어요!</h2>
           </div>
           <div>
-            <button className="bg-[#3752A6] rounded-full w-full py-1 mt-4">
+            <button
+              onClick={onClick}
+              className="bg-[#3752A6] rounded-full w-full py-1 mt-4"
+            >
               <span className="text-white text-sm font-semibold">
                 집 등록하기
               </span>

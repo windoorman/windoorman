@@ -11,19 +11,19 @@ const Navbar = () => {
 
   const buttons = [
     {
-      path: "/window",
+      paths: ["/window", "/home/regist"], // 여러 경로를 배열로 설정
       label: "홈",
       icon: Home,
       activeIcon: ActiveHome,
     },
     {
-      path: "/schedule",
+      paths: ["/schedule"],
       label: "일정",
       icon: Calender,
       activeIcon: ActiveCalender,
     },
     {
-      path: "/info",
+      paths: ["/info"],
       label: "정보",
       icon: Profile,
       activeIcon: ActiveProfile,
@@ -31,8 +31,12 @@ const Navbar = () => {
   ];
 
   // 현재 경로에 따라 아이콘과 텍스트 스타일 결정
-  const getIconAndStyle = (path: string, icon: string, activeIcon: string) => {
-    const isActive = locationNow.pathname === path;
+  const getIconAndStyle = (
+    paths: string | string[],
+    icon: string,
+    activeIcon: string
+  ) => {
+    const isActive = paths.includes(locationNow.pathname); // 현재 경로가 paths 배열에 포함되는지 확인
     return {
       iconSrc: isActive ? activeIcon : icon,
       textColor: isActive ? "text-[#3752A6]" : "text-[#B0B0B0]",
@@ -43,14 +47,14 @@ const Navbar = () => {
     <nav className="fixed bottom-0 left-0 right-0 bg-white flex justify-around items-center py-4 pb-6 shadow-t border-t w-full mx-auto">
       {buttons.map((button) => {
         const { iconSrc, textColor } = getIconAndStyle(
-          button.path,
+          button.paths,
           button.icon,
           button.activeIcon
         );
         return (
           <Link
-            key={button.path}
-            to={button.path}
+            key={button.label}
+            to={button.paths[0]} // 주 경로로 이동
             className="flex flex-col items-center"
           >
             <img
