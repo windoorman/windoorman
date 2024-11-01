@@ -4,6 +4,7 @@ import com.window.domain.member.entity.Member;
 import com.window.domain.place.dto.PlaceDto;
 import com.window.domain.place.entity.Place;
 import com.window.domain.place.repository.PlaceRepository;
+import com.window.global.util.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,9 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
 //    private final MemberRepository memberRepository;
 
-    public List<PlaceDto> getPlaces(Long memberId) {
-        List<Place> places = placeRepository.findAllByMemberId(memberId).orElseThrow();
+    public List<PlaceDto> getPlaces() {
+        Member member = MemberInfo.getMemberInfo();
+        List<Place> places = placeRepository.findAllByMemberId(member.getId()).orElseThrow();
 
         List<PlaceDto> placeDtos = new ArrayList<>();
 
@@ -32,9 +34,8 @@ public class PlaceService {
         return placeDtos;
     }
 
-    public Long registPlace(PlaceDto placeDto, Long memberId) {
-//        Member member = memberRepository.findById(memberId);
-        Member member = new Member();
+    public Long registPlace(PlaceDto placeDto) {
+        Member member = MemberInfo.getMemberInfo();
 
         Place place = Place.builder()
                 .name(placeDto.getName())
@@ -48,9 +49,8 @@ public class PlaceService {
         return place.getId();
     }
 
-    public Long updatePlace(PlaceDto placeDto, Long memberId) {
-//        Member member = memberRepository.findById(memberId);
-        Member member = new Member();
+    public Long updatePlace(PlaceDto placeDto) {
+
         Place place = placeRepository.findById(placeDto.getId()).orElseThrow();
         place.updatePlace(placeDto);
         placeRepository.save(place);

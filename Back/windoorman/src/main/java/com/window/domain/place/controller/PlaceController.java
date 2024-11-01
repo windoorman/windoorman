@@ -19,22 +19,21 @@ public class PlaceController {
 
     @GetMapping
     public ResponseEntity<?> getPlaces() {
-        Long memberId = 1L;
-        List<PlaceDto> places = placeService.getPlaces(memberId);
+        List<PlaceDto> places = placeService.getPlaces();
         return ResponseEntity.ok(places);
     }
 
     @PostMapping
     public ResponseEntity<?> registerPlace(@RequestBody PlaceDto place) {
         Long memberId = 1L;
-        Long registeredPlaceId = placeService.registPlace(place, memberId);
+        Long registeredPlaceId = placeService.registPlace(place);
         return ResponseEntity.ok(registeredPlaceId);
     }
 
     @PatchMapping
     public ResponseEntity<?> updatePlace(@RequestBody PlaceDto place) {
         Long memberId = 1L;
-        Long registeredPlaceId = placeService.updatePlace(place, memberId);
+        Long registeredPlaceId = placeService.updatePlace(place);
         return ResponseEntity.ok(registeredPlaceId);
     }
 
