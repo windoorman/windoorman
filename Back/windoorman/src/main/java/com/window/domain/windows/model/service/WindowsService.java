@@ -20,4 +20,6 @@ public interface WindowsService {
     void deleteWindow(Long windowId);
 
     void changeToggle(WindowsToggleRequestDto dto);
+
+
 }
