@@ -5,7 +5,7 @@ const HomeMain = () => {
   const navigate = useNavigate();
 
   const onClick = () => {
-    navigate("/home/regist");
+    navigate("/home");
     console.log("집 등록하기 버튼 클릭");
   };
 
