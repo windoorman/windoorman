@@ -65,6 +65,8 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  /* 그림자효과 추가 */
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
 }
 @media (prefers-color-scheme: light) {
   :root {

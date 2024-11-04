@@ -1,12 +1,11 @@
 import loginButton from "../../assets/login/kakao_login_medium_narrow.png";
+import axios from "axios";
 
 const LoginPage = () => {
-  const K_REST_API_KEY = import.meta.env.VITE_K_REST_API_KEY;
-  const K_REDIRECT_URI = "http://localhost:5173/login/kakao";
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${K_REST_API_KEY}&redirect_uri=${K_REDIRECT_URI}&response_type=code`;
-
+  const url = import.meta.env.VITE_API_URL;
   const handleKakaoLogin = () => {
-    window.location.href = kakaoURL;
+    // 브라우저에서 카카오 인증 페이지로 직접 리디렉션
+    window.location.href = `${url}/oauth2/authorization/kakao`;
   };
   return (
     <div>

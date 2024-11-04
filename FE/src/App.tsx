@@ -21,7 +21,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/window" element={<WindowPage />} />
         <Route path="/home/regist" element={<HomeRegist />} />
         <Route path="/schedule" element={<SchedulePage />} />
