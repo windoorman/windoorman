@@ -14,7 +14,7 @@ const LoginPage = () => {
         <h1>MAN</h1>
       </div>
       <div className="mt-16">
-        <button onClick={handleKakaoLogin}>
+        <button onClick={handleKakaoLogin} className="shadow-none">
           <img src={loginButton} alt="카카오 로그인" />
         </button>
       </div>

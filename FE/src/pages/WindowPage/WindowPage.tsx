@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import windowWind from "../../assets/window/창문환기.png";
 import HomeMain from "../../components/home/HomeMain";
 import Dropdown from "../../components/home/Dropdown";
+import useHomeStore from "../../stores/useHomeStore";
 
 const WindowPage = () => {
   // 드롭다운 상태 관리
@@ -9,6 +10,11 @@ const WindowPage = () => {
 
   // 드롭다운 열기/닫기 토글 함수
   const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
+
+  useEffect(() => {
+    // 홈 데이터 가져오기
+    useHomeStore.getState().fetchHomes();
+  }, []);
 
   return (
     <div>
