@@ -17,12 +17,9 @@ public class ScheduleUpdateRequestDto {
     private Long groupId;
 
     @NotNull
-    private Long windowId;
+    private Long windowsId;
 
-    @NotNull
     private LocalTime startTime;
-
-    @NotNull
     private LocalTime endTime;
 
     @NotEmpty

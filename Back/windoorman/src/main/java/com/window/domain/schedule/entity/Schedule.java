@@ -2,6 +2,7 @@ package com.window.domain.schedule.entity;
 
 import com.window.domain.member.entity.Member;
 import com.window.domain.schedule.dto.request.ScheduleActivateRequestDto;
+import com.window.domain.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -53,8 +54,11 @@ public class Schedule {
     @Column(name = "is_activate", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isActivate;
 
-    public void updateActivate(ScheduleActivateRequestDto dto){
-        this.isActivate = dto.getIsActivate();
+    public void updateSchedule(ScheduleUpdateRequestDto dto){
+        if(dto.getStartTime() != null) this.startTime = dto.getStartTime();
+        if(dto.getEndTime() != null) this.endTime = dto.getEndTime();
     }
+
+
 
 }

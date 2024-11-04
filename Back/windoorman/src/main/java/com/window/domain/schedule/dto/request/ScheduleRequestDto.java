@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class ScheduleRequestDto {
     @NotNull
-    private Long windowId;
+    private Long windowsId;
     @NotNull
     private LocalTime startTime;
     @NotNull

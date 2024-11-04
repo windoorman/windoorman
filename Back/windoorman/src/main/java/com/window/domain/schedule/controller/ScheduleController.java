@@ -8,11 +8,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/schedules")
 @RequiredArgsConstructor
 @Slf4j
@@ -22,20 +22,20 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<?> registerSchedule(@Valid @RequestBody ScheduleRequestDto dto) {
-        scheduleService.registerSchedule(dto);
+    public ResponseEntity<?> registerSchedule(@Valid @RequestBody ScheduleRequestDto dto, Authentication authentication) {
+        Long id = scheduleService.registerSchedule(dto, authentication);
 
-        return ResponseEntity.status(201).body("스케줄 등록");
+        return ResponseEntity.status(201).body(id);
     }
 
     @GetMapping
-    public ResponseEntity<?> getSchedules() {
-        return ResponseEntity.status(200).body(scheduleService.getSchedules());
+    public ResponseEntity<?> getSchedules(Authentication authentication) {
+        return ResponseEntity.status(200).body(scheduleService.getSchedules(authentication));
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateSchedule(@Valid @RequestBody ScheduleUpdateRequestDto dto) {
-        scheduleService.updateSchedule(dto);
+    public ResponseEntity<?> updateSchedule(@Valid @RequestBody ScheduleUpdateRequestDto dto, Authentication authentication) {
+        scheduleService.updateSchedule(dto, authentication);
 
         return ResponseEntity.status(200).body("스케줄 수정");
 

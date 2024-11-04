@@ -8,7 +8,7 @@ import lombok.Getter;
 public class ScheduleActivateRequestDto {
 
     @NotNull
-    private Long scheduleId;
+    private Long groupId;
 
     @NotNull
     private Boolean isActivate;
