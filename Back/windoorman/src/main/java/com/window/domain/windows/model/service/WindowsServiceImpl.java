@@ -31,7 +31,8 @@ public class WindowsServiceImpl implements WindowsService {
 
     @Override
     public Map<String, Object> getWindows(Long placeId) {
-        // place 예외처리
+        Place place = placeRepository.findById(placeId).
+                orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
 
         List<Windows> windows = windowsRepository.findAllByPlaceId(placeId);
         List<WindowsResponseDto> dtoList = new ArrayList<>();
@@ -50,7 +51,7 @@ public class WindowsServiceImpl implements WindowsService {
     @Override
     public WindowsDetailResponseDto getWindowInfo(Long windowsId) {
         Windows window = windowsRepository.findById(windowsId)
-                .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다"));
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
 
         // 실제로 센서에서 데이터 가져오면 그 데이터를 넣기
         SensorDataDto sensorDataDto = new SensorDataDto(25.0, 30.0, 22.8);
@@ -102,7 +103,7 @@ public class WindowsServiceImpl implements WindowsService {
     @Override
     public void updateWindow(WindowsUpdateRequestDto dto) {
         Windows windows = windowsRepository.findById(dto.getWindowsId())
-                .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다."));
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
 
 
         windows.updateWindow(dto);
@@ -121,7 +122,7 @@ public class WindowsServiceImpl implements WindowsService {
     @Override
     public void deleteWindow(Long windowsId) {
         Windows window = windowsRepository.findById(windowsId)
-                .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다."));
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
 
         windowsRepository.deleteById(windowsId);
 
@@ -130,7 +131,7 @@ public class WindowsServiceImpl implements WindowsService {
     @Override
     public void changeToggle(WindowsToggleRequestDto dto) {
         Windows window = windowsRepository.findById(dto.getWindowsId())
-                .orElseThrow(() -> new NoSuchElementException("창문이 존재하지 않습니다."));
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
         log.info("isAuto: {}", dto.getIsAuto());
         window.autoUpdateWindow(dto);
 

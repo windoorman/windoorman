@@ -51,7 +51,7 @@ public class WindowsController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateWindow(@Valid @RequestBody WindowsUpdateRequestDto dto){
+    public ResponseEntity<?> updateWindow(@RequestBody WindowsUpdateRequestDto dto){
         windowService.updateWindow(dto);
 
         return ResponseEntity.status(200).body("수정");

@@ -25,13 +25,6 @@ public class Windows {
         this.isAuto = isAuto;
     }
 
-    @Builder
-    public Windows(String name, String raspberryId, boolean isAuto) {
-        this.name = name;
-        this.raspberryId = raspberryId;
-        this.isAuto = isAuto;
-    }
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
@@ -51,7 +44,7 @@ public class Windows {
     private boolean isAuto;
 
     public void updateWindow(WindowsUpdateRequestDto dto){
-        this.name = dto.getName();
+        if(dto.getName() != null) this.name = dto.getName();
     }
 
     public void autoUpdateWindow(WindowsToggleRequestDto dto){
