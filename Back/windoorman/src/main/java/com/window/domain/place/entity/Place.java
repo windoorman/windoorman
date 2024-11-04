@@ -24,8 +24,12 @@ public class Place {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
+    @Column(name = "is_default", nullable = false)
+    private Boolean isDefault;
+
     public void updatePlace(PlaceDto placeDto) {
         if(placeDto.getAddress() != null) this.address = placeDto.getAddress();
         if(placeDto.getName() != null) this.name = placeDto.getName();
+        this.isDefault = placeDto.getIsDefault();
     }
 }
