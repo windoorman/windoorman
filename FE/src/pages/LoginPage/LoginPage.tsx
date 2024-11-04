@@ -1,5 +1,5 @@
 import loginButton from "../../assets/login/kakao_login_medium_narrow.png";
-import axios from "axios";
+// import axios from "axios";
 
 const LoginPage = () => {
   const url = import.meta.env.VITE_API_URL;
