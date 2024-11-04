@@ -39,6 +39,7 @@ public class PlaceService {
                 .name(placeDto.getName())
                 .address(placeDto.getAddress())
                 .member(member)
+                .isDefault(placeDto.getIsDefault())
                 .build();
 
 

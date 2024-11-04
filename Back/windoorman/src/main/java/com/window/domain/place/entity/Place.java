@@ -4,6 +4,7 @@ import com.window.domain.member.entity.Member;
 import com.window.domain.place.dto.PlaceDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter @Builder
@@ -25,6 +26,7 @@ public class Place {
     private String name;
 
     @Column(name = "is_default", nullable = false)
+    @ColumnDefault("false")
     private Boolean isDefault;
 
     public void updatePlace(PlaceDto placeDto) {
