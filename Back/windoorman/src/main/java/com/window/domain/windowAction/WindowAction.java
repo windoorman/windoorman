@@ -1,7 +1,7 @@
 package com.window.domain.windowAction;
 
 
-import com.window.domain.window.entity.Windows;
+import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,7 +16,7 @@ public class WindowAction {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "window_id")
+    @JoinColumn(name = "windows_id")
     private Windows windows;
 
     @Enumerated(EnumType.STRING)

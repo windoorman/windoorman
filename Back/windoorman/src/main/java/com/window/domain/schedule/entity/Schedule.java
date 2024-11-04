@@ -1,7 +1,7 @@
 package com.window.domain.schedule.entity;
 
 import com.window.domain.member.entity.Member;
-import com.window.domain.window.entity.Windows;
+import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
