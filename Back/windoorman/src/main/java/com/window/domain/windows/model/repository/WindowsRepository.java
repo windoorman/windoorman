@@ -4,10 +4,11 @@ import com.window.domain.windows.entity.Windows;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WindowsRepository extends JpaRepository<Windows, Long> {
 
-    List<Windows> findAllByPlaceId(Long placeId);
+    Optional<List<Windows>> findAllByPlaceId(Long placeId);
 
     Windows findByRaspberryId(String raspberryId);
 }

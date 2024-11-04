@@ -13,7 +13,6 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Windows {
 
 

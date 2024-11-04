@@ -4,21 +4,18 @@ import com.window.domain.windows.dto.request.WindowsRequestDto;
 import com.window.domain.windows.dto.request.WindowsToggleRequestDto;
 import com.window.domain.windows.dto.request.WindowsUpdateRequestDto;
 import com.window.domain.windows.dto.response.WindowsDetailResponseDto;
-import com.window.domain.windows.dto.response.WindowsResponseDto;
 import com.window.domain.windows.model.service.WindowsService;
-import com.window.domain.windows.model.service.WindowsServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/windows")
 @RequiredArgsConstructor
 @Validated
@@ -45,9 +42,9 @@ public class WindowsController {
     @PostMapping
     public ResponseEntity<?> registerWindow(@Valid @RequestBody WindowsRequestDto dto, Authentication authentication){
         log.info("창문 등록 정보 {}", dto.getName());
-        windowService.registerWindow(dto, authentication);
+        Long windowsId = windowService.registerWindow(dto, authentication);
 
-        return ResponseEntity.status(201).body("등록");
+        return ResponseEntity.status(201).body(windowsId);
     }
 
     @PatchMapping
