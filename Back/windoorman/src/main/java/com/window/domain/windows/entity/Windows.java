@@ -13,20 +13,12 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Windows {
 
 
     @Builder
     public Windows(Place place, String name, String raspberryId, boolean isAuto) {
         this.place = place;
-        this.name = name;
-        this.raspberryId = raspberryId;
-        this.isAuto = isAuto;
-    }
-
-    @Builder
-    public Windows(String name, String raspberryId, boolean isAuto) {
         this.name = name;
         this.raspberryId = raspberryId;
         this.isAuto = isAuto;
@@ -51,7 +43,7 @@ public class Windows {
     private boolean isAuto;
 
     public void updateWindow(WindowsUpdateRequestDto dto){
-        this.name = dto.getName();
+        if(dto.getName() != null) this.name = dto.getName();
     }
 
     public void autoUpdateWindow(WindowsToggleRequestDto dto){

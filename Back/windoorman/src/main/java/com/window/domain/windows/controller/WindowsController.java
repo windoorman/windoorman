@@ -4,20 +4,18 @@ import com.window.domain.windows.dto.request.WindowsRequestDto;
 import com.window.domain.windows.dto.request.WindowsToggleRequestDto;
 import com.window.domain.windows.dto.request.WindowsUpdateRequestDto;
 import com.window.domain.windows.dto.response.WindowsDetailResponseDto;
-import com.window.domain.windows.dto.response.WindowsResponseDto;
 import com.window.domain.windows.model.service.WindowsService;
-import com.window.domain.windows.model.service.WindowsServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/windows")
 @RequiredArgsConstructor
 @Validated
@@ -34,31 +32,31 @@ public class WindowsController {
         return ResponseEntity.ok(windows);
     }
 
-    @GetMapping("/detail/{windowId}")
-    public ResponseEntity<?> getWindow(@PathVariable Long windowId) {
-        WindowsDetailResponseDto dto = windowService.getWindowInfo(windowId);
+    @GetMapping("/detail/{windowsId}")
+    public ResponseEntity<?> getWindow(@PathVariable Long windowsId) {
+        WindowsDetailResponseDto dto = windowService.getWindowInfo(windowsId);
 
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public ResponseEntity<?> registerWindow(@Valid @RequestBody WindowsRequestDto dto){
+    public ResponseEntity<?> registerWindow(@Valid @RequestBody WindowsRequestDto dto, Authentication authentication){
         log.info("창문 등록 정보 {}", dto.getName());
-        windowService.registerWindow(dto);
+        Long windowsId = windowService.registerWindow(dto, authentication);
 
-        return ResponseEntity.status(201).body("등록");
+        return ResponseEntity.status(201).body(windowsId);
     }
 
     @PatchMapping
-    public ResponseEntity<?> updateWindow(@Valid @RequestBody WindowsUpdateRequestDto dto){
+    public ResponseEntity<?> updateWindow(@RequestBody WindowsUpdateRequestDto dto){
         windowService.updateWindow(dto);
 
         return ResponseEntity.status(200).body("수정");
     }
 
-    @DeleteMapping("/{windowId}")
-    public ResponseEntity<?> deleteWindow(@PathVariable Long windowId){
-        windowService.deleteWindow(windowId);
+    @DeleteMapping("/{windowsId}")
+    public ResponseEntity<?> deleteWindow(@PathVariable Long windowsId){
+        windowService.deleteWindow(windowsId);
 
         return ResponseEntity.status(200).body("삭제");
     }

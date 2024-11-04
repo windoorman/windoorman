@@ -33,7 +33,7 @@ public class Schedule {
     private ScheduleGroup scheduleGroup;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "window_id")
+    @JoinColumn(name = "windows_id")
     private Windows windows;
 
     @ManyToOne(fetch = FetchType.LAZY)
