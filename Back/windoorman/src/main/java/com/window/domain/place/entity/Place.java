@@ -3,14 +3,11 @@ package com.window.domain.place.entity;
 import com.window.domain.member.entity.Member;
 import com.window.domain.place.dto.PlaceDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter @Builder
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class Place {
 
