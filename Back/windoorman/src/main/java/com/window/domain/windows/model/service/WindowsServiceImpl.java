@@ -2,6 +2,7 @@ package com.window.domain.windows.model.service;
 
 import com.window.domain.member.entity.Member;
 import com.window.domain.place.entity.Place;
+import com.window.domain.place.repository.PlaceRepository;
 import com.window.domain.windows.dto.SensorDataDto;
 import com.window.domain.windows.dto.request.WindowsRequestDto;
 import com.window.domain.windows.dto.request.WindowsToggleRequestDto;
@@ -10,8 +11,12 @@ import com.window.domain.windows.dto.response.WindowsDetailResponseDto;
 import com.window.domain.windows.dto.response.WindowsResponseDto;
 import com.window.domain.windows.entity.Windows;
 import com.window.domain.windows.model.repository.WindowsRepository;
+import com.window.global.exception.CustomException;
+import com.window.global.exception.ExceptionResponse;
+import com.window.global.util.MemberInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,6 +27,7 @@ import java.util.*;
 public class WindowsServiceImpl implements WindowsService {
 
     private final WindowsRepository windowsRepository;
+    private final PlaceRepository placeRepository;
 
     @Override
     public Map<String, Object> getWindows(Long placeId) {
@@ -57,11 +63,11 @@ public class WindowsServiceImpl implements WindowsService {
     }
 
     @Override
-    public void registerWindow(WindowsRequestDto dto) {
+    public void registerWindow(WindowsRequestDto dto, Authentication authentication) {
 
-        Member member = new Member(1L, "jml6534@naver.com", "이재민", false);
-        // dto의 placeId로 Place 불러오기
-        Place place = new Place(1L, member, "대전광역시 유성구 궁동 486-3", "자취방");
+        Place place = placeRepository.findById(dto.getPlaceId())
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
+
         String uuid = UUID.randomUUID().toString();
 
         while(true){

@@ -1,15 +1,14 @@
 package com.window.domain.place.entity;
 
 import com.window.domain.member.entity.Member;
+import com.window.domain.place.dto.PlaceDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Getter
-@AllArgsConstructor
+@Getter @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Place {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +18,14 @@ public class Place {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "place", nullable = false, length = 50)
-    private String place;
+    @Column(name = "address", nullable = false, length = 50)
+    private String address;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    public void updatePlace(PlaceDto placeDto) {
+        if(placeDto.getAddress() != null) this.address = placeDto.getAddress();
+        if(placeDto.getName() != null) this.name = placeDto.getName();
+    }
 }

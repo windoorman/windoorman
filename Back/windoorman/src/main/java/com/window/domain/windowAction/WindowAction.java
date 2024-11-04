@@ -1,5 +1,6 @@
 package com.window.domain.windowAction;
 
+
 import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
 import lombok.Getter;

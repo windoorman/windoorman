@@ -4,6 +4,7 @@ import com.window.domain.windows.dto.request.WindowsRequestDto;
 import com.window.domain.windows.dto.request.WindowsToggleRequestDto;
 import com.window.domain.windows.dto.request.WindowsUpdateRequestDto;
 import com.window.domain.windows.dto.response.WindowsDetailResponseDto;
+import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public interface WindowsService {
 
     WindowsDetailResponseDto getWindowInfo(Long windowsId);
 
-    void registerWindow(WindowsRequestDto dto);
+    void registerWindow(WindowsRequestDto dto, Authentication authentication);
 
     void updateWindow(WindowsUpdateRequestDto dto);
 
