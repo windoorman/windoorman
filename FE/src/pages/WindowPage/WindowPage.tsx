@@ -9,6 +9,7 @@ const WindowPage = () => {
 
   // 드롭다운 열기/닫기 토글 함수
   const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
+
   return (
     <div>
       <div className="m-4 mt-10 ml-10">

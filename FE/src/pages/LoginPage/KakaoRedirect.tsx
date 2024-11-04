@@ -16,7 +16,7 @@ const KakaRedirect = () => {
 
     if (typeof access === "string") {
       setAccessToken(access); // Zustand에 access 토큰 저장
-      console.log("access token:", access);
+      console.log("access token:", useUserStore.getState().accessToken);
       navigate("/window"); // 메인 페이지로 이동
     } else {
       console.error("Access token not found in the URL");

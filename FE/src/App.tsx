@@ -3,6 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  Navigate,
   useLocation,
 } from "react-router-dom";
 import Navbar from "./components/navbar/Navbar";
@@ -13,22 +14,62 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import KakaRedirect from "./pages/LoginPage/KakaoRedirect";
 import HomeList from "./components/home/HomeList";
 import HomeRegist from "./components/home/HomeRegist";
+import ProtectedRoute from "./pages/ProtectedRoute"; // ProtectedRoute 추가
 
 function App() {
   const location = useLocation();
-
-  const hideNavbar = ["/", "/token"].includes(location.pathname);
+  const hideNavbar = ["/", "/token", "/login"].includes(location.pathname);
 
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/window" element={<WindowPage />} />
-        <Route path="/home" element={<HomeList />} />
-        <Route path="/home/regist" element={<HomeRegist />} />
-        <Route path="/schedule" element={<SchedulePage />} />
-        <Route path="/info" element={<InfoPage />} />
         <Route path="/token" element={<KakaRedirect />} />
+
+        {/* 보호된 경로 */}
+        <Route
+          path="/window"
+          element={
+            <ProtectedRoute>
+              <WindowPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <HomeList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/home/regist"
+          element={
+            <ProtectedRoute>
+              <HomeRegist />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/schedule"
+          element={
+            <ProtectedRoute>
+              <SchedulePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/info"
+          element={
+            <ProtectedRoute>
+              <InfoPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 유효하지 않은 경로일 경우 /window로 리디렉션 */}
+        <Route path="*" element={<Navigate to="/window" replace />} />
       </Routes>
       {!hideNavbar && <Navbar />}
     </div>
