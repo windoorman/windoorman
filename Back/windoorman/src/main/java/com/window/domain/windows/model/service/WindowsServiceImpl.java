@@ -41,7 +41,7 @@ public class WindowsServiceImpl implements WindowsService {
             dtoList.add(WindowsResponseDto.createResponseDto(window));
         }
         Map<String, Object> map = new HashMap<>();
-        map.put("placeName", "우리집");
+        map.put("placeName", place.getName());
         map.put("windows", dtoList);
 
 
@@ -57,7 +57,7 @@ public class WindowsServiceImpl implements WindowsService {
         SensorDataDto sensorDataDto = new SensorDataDto(25.0, 30.0, 22.8);
 
         return WindowsDetailResponseDto.builder()
-                .placeName("우리집")
+                .placeName(window.getPlace().getName())
                 .windowsId(windowsId)
                 .name(window.getName())
                 .sensorData(sensorDataDto).build();
