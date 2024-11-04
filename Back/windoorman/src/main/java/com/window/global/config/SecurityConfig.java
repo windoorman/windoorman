@@ -46,7 +46,7 @@ public class SecurityConfig {
         http.formLogin((formLogin) -> formLogin.disable());
         http.httpBasic((httpBasic) -> httpBasic.disable());
         http.authorizeHttpRequests((requests) -> requests
-//                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated());
 
         http.oauth2Login((oauth) ->
