@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useHomeStore from "../../stores/useHomeStore";
 import myHome from "../../assets/window/myHome.png";
 import company from "../../assets/window/company.png";
@@ -12,7 +13,12 @@ const HomeRegist = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basicAddress, setBasicAddress] = useState("");
   const [detailAddress, setDetailAddress] = useState("");
-  const [isDefaultHome, setIsDefaultHome] = useState(false); // 기본 집 설정 상태
+  const [isDefaultHome, setIsDefaultHome] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // 성공 모달 상태
+
+  const navigate = useNavigate();
+  const { RegistHome } = useHomeStore();
 
   const handleSelect = (label: string) => {
     setSelected(label);
@@ -31,19 +37,34 @@ const HomeRegist = () => {
     setBasicAddress(data.address);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (basicAddress === "" || detailAddress === "" || inputValue === "") {
       alert("모든 항목을 입력해주세요.");
       return;
     }
 
     const home = {
-      address: basicAddress + " " + detailAddress,
+      address: basicAddress,
+      detailAddress: detailAddress,
       name: inputValue,
       isDefault: isDefaultHome,
     };
 
-    useHomeStore.getState().RegistHome(home);
+    setIsLoading(true); // 로딩 시작
+
+    try {
+      await RegistHome(home);
+      setIsLoading(false); // 로딩 종료
+      setIsSuccessModalOpen(true); // 성공 모달 열기
+    } catch (error) {
+      setIsLoading(false); // 로딩 종료
+      console.error("Failed to regist home:", error);
+    }
+  };
+
+  const closeSuccessModal = () => {
+    setIsSuccessModalOpen(false);
+    navigate("/window");
   };
 
   return (
@@ -149,7 +170,7 @@ const HomeRegist = () => {
               className="bg-[#3752A6] rounded-full w-1/2 py-1"
             >
               <span className="text-white text-sm font-semibold">
-                집 등록하기
+                {isLoading ? "등록 중..." : "집 등록하기"}
               </span>
             </button>
           </div>
@@ -162,6 +183,23 @@ const HomeRegist = () => {
           onComplete={handleAddressSelect}
           onClose={() => setIsModalOpen(false)}
         />
+      )}
+
+      {/* 성공 모달 */}
+      {isSuccessModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <p className="text-center text-lg font-semibold text-[#3C4973]">
+              집 등록이 완료되었습니다!
+            </p>
+            <button
+              onClick={closeSuccessModal}
+              className="mt-4 w-full py-2 bg-[#3752A6] text-white rounded-lg font-semibold"
+            >
+              확인
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

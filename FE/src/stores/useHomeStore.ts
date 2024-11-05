@@ -4,6 +4,7 @@ import axiosApi from "../instance/axiosApi";
 interface Home {
   id?: number;
   address: string;
+  detailAddress: string;
   name: string;
   isDefault: boolean;
 }

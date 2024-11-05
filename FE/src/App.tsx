@@ -15,6 +15,7 @@ import KakaRedirect from "./pages/LoginPage/KakaoRedirect";
 import HomeList from "./components/home/HomeList";
 import HomeRegist from "./components/home/HomeRegist";
 import ProtectedRoute from "./pages/ProtectedRoute"; // ProtectedRoute 추가
+import ReportPage from "./components/info/ReportPage";
 
 function App() {
   const location = useLocation();
@@ -67,6 +68,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/report"
+          element={
+            <ProtectedRoute>
+              <ReportPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 기본 경로 */}
 
         {/* 유효하지 않은 경로일 경우 /window로 리디렉션 */}
         <Route path="*" element={<Navigate to="/window" replace />} />
