@@ -2,9 +2,12 @@ package com.window.global.security.jwt;
 
 import com.window.domain.member.entity.Member;
 import com.window.global.config.JwtValueConfig;
+import com.window.global.exception.CustomException;
+import com.window.global.exception.ExceptionResponse;
 import com.window.global.security.auth.PrincipalDetails;
 import com.window.global.security.auth.PrincipalDetailsService;
 import io.jsonwebtoken.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +28,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .claim("id", member.getId())
                 .claim("email", member.getEmail())
-                .issuedAt(expireDate(config.getAccessExpirationTime()))
+                .setExpiration(expireDate(config.getAccessExpirationTime()))
                 .signWith(config.getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -34,7 +37,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .claim("id", member.getId())
                 .claim("email", member.getEmail())
-                .issuedAt(expireDate(config.getRefreshExpirationTime()))
+                .setExpiration(expireDate(config.getRefreshExpirationTime()))
                 .signWith(config.getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -43,15 +46,31 @@ public class JwtTokenProvider {
         return new Date(new Date().getTime() + expireTime);
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token, HttpServletRequest request) {
         try {
             Jwts.parser()
-                    .verifyWith(config.getSecretKey())
+                    .setSigningKey(config.getSecretKey())
                     .build()
-                    .parseSignedClaims(token);
+                    .parseClaimsJws(token);
             return  true;
-        } catch (JwtException e) {
-            return false;
+        } catch (ExpiredJwtException e){
+            request.setAttribute("exception", CustomException.EXPIRED_JWT_EXCEPTION);
+        } catch (JwtException e){
+            request.setAttribute("exception", CustomException.NOT_VALID_JWT_EXCEPTION);
+        }
+        return false;
+    }
+
+    public void validateRefreshToken(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(config.getSecretKey())
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (ExpiredJwtException e){
+            throw new ExceptionResponse(CustomException.EXPIRED_JWT_EXCEPTION);
+        } catch (JwtException e){
+            throw new ExceptionResponse(CustomException.NOT_VALID_JWT_EXCEPTION);
         }
     }
 
