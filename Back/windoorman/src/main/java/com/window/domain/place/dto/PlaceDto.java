@@ -9,7 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PlaceDto {
     private Long id;
-    private String address;
     private String name;
+    private String address;
+    private String detailAddress;
     private Boolean isDefault;
 }

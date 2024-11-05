@@ -26,7 +26,7 @@ public class PlaceService {
         List<PlaceDto> placeDtos = new ArrayList<>();
 
         for(Place place: places) {
-            placeDtos.add(new PlaceDto(place.getId(), place.getName(), place.getAddress(), place.getIsDefault()));
+            placeDtos.add(new PlaceDto(place.getId(), place.getName(), place.getAddress(), place.getDetailAddress(), place.getIsDefault()));
         }
 
         return placeDtos;
@@ -38,6 +38,7 @@ public class PlaceService {
         Place place = Place.builder()
                 .name(placeDto.getName())
                 .address(placeDto.getAddress())
+                .detailAddress(placeDto.getDetailAddress())
                 .member(member)
                 .isDefault(placeDto.getIsDefault())
                 .build();

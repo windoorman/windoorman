@@ -22,6 +22,9 @@ public class Place {
     @Column(name = "address", nullable = false, length = 50)
     private String address;
 
+    @Column(name = "detail_address", nullable = false, length = 100)
+    private String detailAddress;
+
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
@@ -31,6 +34,7 @@ public class Place {
 
     public void updatePlace(PlaceDto placeDto) {
         if(placeDto.getAddress() != null) this.address = placeDto.getAddress();
+        if(placeDto.getDetailAddress() != null) this.detailAddress = placeDto.getDetailAddress();
         if(placeDto.getName() != null) this.name = placeDto.getName();
         this.isDefault = placeDto.getIsDefault();
     }
