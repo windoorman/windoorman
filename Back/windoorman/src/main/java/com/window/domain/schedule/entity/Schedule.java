@@ -54,10 +54,6 @@ public class Schedule {
     @Column(name = "is_activate", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isActivate;
 
-    public void updateSchedule(ScheduleUpdateRequestDto dto){
-        if(dto.getStartTime() != null) this.startTime = dto.getStartTime();
-        if(dto.getEndTime() != null) this.endTime = dto.getEndTime();
-    }
 
 
 
