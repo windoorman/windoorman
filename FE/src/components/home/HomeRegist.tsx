@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useHomeStore from "../../stores/useHomeStore";
 import myHome from "../../assets/window/myHome.png";
 import company from "../../assets/window/company.png";
 import building from "../../assets/window/building.png";
@@ -10,6 +11,8 @@ const HomeRegist = () => {
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basicAddress, setBasicAddress] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
+  const [isDefaultHome, setIsDefaultHome] = useState(false); // 기본 집 설정 상태
 
   const handleSelect = (label: string) => {
     setSelected(label);
@@ -25,7 +28,22 @@ const HomeRegist = () => {
   };
 
   const handleAddressSelect = (data: any) => {
-    setBasicAddress(data.address); // 기본 주소 설정
+    setBasicAddress(data.address);
+  };
+
+  const handleSubmit = () => {
+    if (basicAddress === "" || detailAddress === "" || inputValue === "") {
+      alert("모든 항목을 입력해주세요.");
+      return;
+    }
+
+    const home = {
+      address: basicAddress + " " + detailAddress,
+      name: inputValue,
+      isDefault: isDefaultHome,
+    };
+
+    useHomeStore.getState().RegistHome(home);
   };
 
   return (
@@ -64,6 +82,8 @@ const HomeRegist = () => {
               type="text"
               className="shadow-md w-full"
               placeholder="상세 주소"
+              value={detailAddress}
+              onChange={(e) => setDetailAddress(e.target.value)}
             />
           </div>
 
@@ -110,8 +130,24 @@ const HomeRegist = () => {
               readOnly={isReadOnly}
             />
           </div>
+
+          <div className="flex items-center space-x-2 mb-4">
+            <input
+              type="checkbox"
+              checked={isDefaultHome}
+              onChange={() => setIsDefaultHome(!isDefaultHome)}
+              className="w-4 h-4 text-[#3752A6] rounded"
+            />
+            <label className="text-sm text-[#3C4973] font-semibold">
+              기본 집으로 설정
+            </label>
+          </div>
+
           <div className="mt-8 flex justify-center">
-            <button className="bg-[#3752A6] rounded-full w-1/2 py-1">
+            <button
+              onClick={handleSubmit}
+              className="bg-[#3752A6] rounded-full w-1/2 py-1"
+            >
               <span className="text-white text-sm font-semibold">
                 집 등록하기
               </span>

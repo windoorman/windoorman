@@ -24,7 +24,7 @@ const useHomeStore = create<HomeState>((set) => ({
       set({ homes: response.data });
       console.log("Fetched homes:", response.data);
     } catch (error) {
-      console.error("Failed to fetch homes:", error);
+      console.error("Failed to fetch homes: ", error);
     }
   },
   RegistHome: async (home: Home) => {
