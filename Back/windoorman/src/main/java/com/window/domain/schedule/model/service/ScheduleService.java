@@ -40,10 +40,9 @@ public class ScheduleService {
 
         Member member = MemberInfo.getMemberInfo(authentication);
 
+        Windows windows = windowsRepository.findById(dto.getWindowsId())
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_SCHEDULE_EXCEPTION));
         for(Day day : dto.getDays()){
-            Windows windows = windowsRepository.findById(dto.getWindowsId())
-                    .orElseThrow(NoSuchElementException::new);
-
             Schedule schedule = new Schedule(scheduleGroup, windows, member, dto.getStartTime(), dto.getEndTime(), day);
             scheduleRepository.save(schedule);
         }
@@ -85,8 +84,6 @@ public class ScheduleService {
     public void updateSchedule(ScheduleUpdateRequestDto dto, Authentication authentication) {
         ScheduleGroup scheduleGroup = scheduleGroupRepository.findById(dto.getGroupId())
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_SCHEDULEGROUP_EXCEPTION));
-
-
 
         scheduleGroupRepository.deleteById(dto.getGroupId());
 
