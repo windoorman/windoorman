@@ -1,5 +1,6 @@
 package com.window.global.security.jwt;
 
+import com.window.global.exception.CustomException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,14 +22,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getAccessToken(request);
+        String requestURI = request.getRequestURI();
+        log.info("requestURI: {}", requestURI);
 
-        if(accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+        String accessToken = getAccessToken(request);
+        if(!requestURI.equals("/api/members/reissue") && accessToken != null && jwtTokenProvider.validateAccessToken(accessToken, request)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
-        log.info("doFilterInternal access token: {}", accessToken);
 
         filterChain.doFilter(request, response);
     }
@@ -39,6 +40,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
 
+        request.setAttribute("exception", CustomException.NOT_VALID_JWT_EXCEPTION);
         return null;
     }
 }
