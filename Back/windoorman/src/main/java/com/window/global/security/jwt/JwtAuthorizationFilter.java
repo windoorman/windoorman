@@ -26,7 +26,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("requestURI: {}", requestURI);
 
         String accessToken = getAccessToken(request);
-        if(!requestURI.equals("/api/members/reissue") && accessToken != null && jwtTokenProvider.validateAccessToken(accessToken, request)) {
+        if(accessToken != null && jwtTokenProvider.validateAccessToken(accessToken, request)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
