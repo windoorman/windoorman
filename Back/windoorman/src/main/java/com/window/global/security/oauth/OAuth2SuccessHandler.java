@@ -2,6 +2,7 @@ package com.window.global.security.oauth;
 
 import com.window.domain.member.entity.Member;
 import com.window.global.security.auth.PrincipalDetails;
+import com.window.global.security.auth.RefreshTokenRepository;
 import com.window.global.security.jwt.JwtTokenProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -31,6 +33,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtTokenProvider.generateRefreshToken(member);
 
         log.info("accessToken: {} refreshToken: {}", accessToken, refreshToken);
+
+        if(refreshTokenRepository.existsRefreshToken(member.getId())){
+            refreshTokenRepository.deleteRefreshToken(member.getId());
+        }
+        refreshTokenRepository.saveRefreshToken(member.getId(), refreshToken);
 
         String redirectUrl = UriComponentsBuilder.
                 fromUriString("https://k11b107a.p.ssafy.io/token")
