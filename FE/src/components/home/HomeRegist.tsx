@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useHomeStore from "../../stores/useHomeStore";
 import myHome from "../../assets/window/myHome.png";
@@ -7,18 +7,26 @@ import building from "../../assets/window/building.png";
 import DaumPost from "./DaumPost";
 
 const HomeRegist = () => {
+  const homes = useHomeStore((state) => state.homes);
   const [selected, setSelected] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [isReadOnly, setIsReadOnly] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basicAddress, setBasicAddress] = useState("");
   const [detailAddress, setDetailAddress] = useState("");
-  const [isDefaultHome, setIsDefaultHome] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // 성공 모달 상태
+  const [isDefaultHome, setIsDefaultHome] = useState(homes.length === 0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false); // 에러 모달 상태 추가
 
   const navigate = useNavigate();
   const { RegistHome } = useHomeStore();
+
+  useEffect(() => {
+    if (homes.length === 0) {
+      setIsDefaultHome(true);
+    }
+  }, [homes.length]);
 
   const handleSelect = (label: string) => {
     setSelected(label);
@@ -39,7 +47,7 @@ const HomeRegist = () => {
 
   const handleSubmit = async () => {
     if (basicAddress === "" || detailAddress === "" || inputValue === "") {
-      alert("모든 항목을 입력해주세요.");
+      setIsErrorModalOpen(true); // 에러 모달 열기
       return;
     }
 
@@ -50,21 +58,25 @@ const HomeRegist = () => {
       isDefault: isDefaultHome,
     };
 
-    setIsLoading(true); // 로딩 시작
+    setIsLoading(true);
 
     try {
       await RegistHome(home);
-      setIsLoading(false); // 로딩 종료
-      setIsSuccessModalOpen(true); // 성공 모달 열기
+      setIsLoading(false);
+      setIsSuccessModalOpen(true);
     } catch (error) {
-      setIsLoading(false); // 로딩 종료
-      console.error("Failed to regist home:", error);
+      setIsLoading(false);
+      console.error("Failed to register home:", error);
     }
   };
 
   const closeSuccessModal = () => {
     setIsSuccessModalOpen(false);
     navigate("/window");
+  };
+
+  const closeErrorModal = () => {
+    setIsErrorModalOpen(false); // 에러 모달 닫기
   };
 
   return (
@@ -158,8 +170,17 @@ const HomeRegist = () => {
               checked={isDefaultHome}
               onChange={() => setIsDefaultHome(!isDefaultHome)}
               className="w-4 h-4 text-[#3752A6] rounded"
+              disabled={homes.length === 0}
+              style={{
+                cursor: homes.length === 0 ? "not-allowed" : "pointer",
+                color: homes.length === 0 ? "gray" : "#3752A6",
+              }}
             />
-            <label className="text-sm text-[#3C4973] font-semibold">
+            <label
+              className={`text-sm font-semibold ${
+                homes.length === 0 ? "text-gray-400" : "text-[#3C4973]"
+              }`}
+            >
               기본 집으로 설정
             </label>
           </div>
@@ -195,6 +216,23 @@ const HomeRegist = () => {
             <button
               onClick={closeSuccessModal}
               className="mt-4 w-full py-2 bg-[#3752A6] text-white rounded-lg font-semibold"
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 에러 모달 */}
+      {isErrorModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <p className="text-center text-lg font-semibold text-[#E65B5B]">
+              모든 항목을 입력해주세요!
+            </p>
+            <button
+              onClick={closeErrorModal}
+              className="mt-4 w-full py-2 bg-[#E65B5B] text-white rounded-lg font-semibold"
             >
               확인
             </button>

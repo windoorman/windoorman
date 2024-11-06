@@ -14,6 +14,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import KakaRedirect from "./pages/LoginPage/KakaoRedirect";
 import HomeList from "./components/home/HomeList";
 import HomeRegist from "./components/home/HomeRegist";
+import HomeUpdate from "./components/home/HomeUpdate";
 import ProtectedRoute from "./pages/ProtectedRoute"; // ProtectedRoute 추가
 import ReportPage from "./components/info/ReportPage";
 
@@ -49,6 +50,14 @@ function App() {
           element={
             <ProtectedRoute>
               <HomeRegist />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/home/update"
+          element={
+            <ProtectedRoute>
+              <HomeUpdate />
             </ProtectedRoute>
           }
         />
