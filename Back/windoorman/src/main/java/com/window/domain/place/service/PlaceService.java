@@ -1,6 +1,7 @@
 package com.window.domain.place.service;
 
 import com.window.domain.member.entity.Member;
+import com.window.domain.member.repository.MemberRepository;
 import com.window.domain.place.dto.PlaceDto;
 import com.window.domain.place.entity.Place;
 import com.window.domain.place.repository.PlaceRepository;
@@ -19,6 +20,7 @@ import java.util.List;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
+    private final MemberRepository memberRepository;
     public List<PlaceDto> getPlaces(Authentication authentication) {
         Member member = MemberInfo.getMemberInfo(authentication);
         List<Place> places = placeRepository.findAllByMemberId(member.getId()).orElseThrow(() ->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
@@ -43,18 +45,43 @@ public class PlaceService {
                 .isDefault(placeDto.getIsDefault())
                 .build();
 
+        place = placeRepository.save(place);
 
-        placeRepository.save(place);
+        Long beforeDefaultId = member.getDefaultAddressId();
 
+
+        if(placeDto.getIsDefault() ) {
+            // 원래 디폴트 주소를 false
+            if(beforeDefaultId!=0) {
+                Place beforeDefault = placeRepository.findById(beforeDefaultId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
+                beforeDefault.setDefaultFalse();
+            }
+            // 멤버 디폴트 주소 변경
+            member.updateDefaultAddress(place.getId());
+        }
+
+        memberRepository.save(member);
         return place.getId();
     }
 
-    public Long updatePlace(PlaceDto placeDto) {
+    public Long updatePlace(PlaceDto placeDto, Authentication authentication ) {
 
         Place place = placeRepository.findById(placeDto.getId()).orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
         place.updatePlace(placeDto);
         placeRepository.save(place);
 
+        Member member = MemberInfo.getMemberInfo(authentication);
+        Long beforeDefaultId = member.getDefaultAddressId();
+        if(placeDto.getIsDefault() ) {
+            // 원래 디폴트 주소를 false
+            if(beforeDefaultId!=0) {
+                Place beforeDefault = placeRepository.findById(beforeDefaultId).orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
+                beforeDefault.setDefaultFalse();
+            }
+            // 멤버 디폴트 주소 변경
+            member.updateDefaultAddress(place.getId());
+        }
+        memberRepository.save(member);
         return place.getId();
     }
 

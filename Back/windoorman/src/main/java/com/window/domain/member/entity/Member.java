@@ -27,6 +27,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "default_address_id")
+    private Long defaultAddressId;
+
     @ColumnDefault("false")
     @Column(name = "is_delete", nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isDelete;
@@ -37,6 +40,7 @@ public class Member {
         this.nickname = nickname;
         this.role = role;
         this.isDelete = isDelete;
+        this.defaultAddressId = 0L;
     }
 
     public static Member signUpMember(OAuth2Attributes oAuth2Attributes){
@@ -46,5 +50,9 @@ public class Member {
                 .role(Role.ROLE_USER)
                 .isDelete(false)
                 .build();
+    }
+
+    public void updateDefaultAddress(Long defaultAddressId) {
+        this.defaultAddressId = defaultAddressId;
     }
 }
