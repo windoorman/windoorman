@@ -8,7 +8,7 @@ const WindowMain = () => {
   return (
     <div>
       <div className="mt-8 pt-2 border-t-2 rounded-3xl">
-        <div className="px-28">
+        <div className="px-24">
           <div className=" mb-4 mt-16">
             <img src={sadGhost} alt="슬픈 유령" />
           </div>

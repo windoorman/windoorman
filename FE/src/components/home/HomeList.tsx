@@ -1,12 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import useHomeStore from "../../stores/useHomeStore";
 
 const HomeList = () => {
-  const homes = [
-    { type: "자취", address: "대전 유성구 동서대로 98-39", isDefault: true },
-    { type: "본가", address: "대전 유성구 동서대로 98-39", isDefault: false },
-    { type: "자취", address: "대전 유성구 동서대로 98-39", isDefault: false },
-    { type: "자취", address: "대전 유성구 동서대로 98-39", isDefault: false },
-  ];
+  const homes = useHomeStore((state) => state.homes);
 
   const navigate = useNavigate();
 
@@ -39,7 +35,7 @@ const HomeList = () => {
               {/* 첫 번째 줄: 타입과 기본 라벨 */}
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[#3C4973]">{home.type}</span>
+                  <span className="text-[#3C4973]">{home.name}</span>
                   {home.isDefault && (
                     <span className="text-xs bg-[#3752A6] text-white rounded-full px-2 py-0.5">
                       기본
@@ -51,7 +47,7 @@ const HomeList = () => {
               {/* 두 번째 줄: 주소와 버튼 */}
               <div className="flex justify-between items-center mt-2">
                 <span className="font-medium text-[#B0B0B0] text-sm">
-                  {home.address}
+                  {home.detailAddress}
                 </span>
                 <div className="flex space-x-2">
                   <button className="text-[#3752A6] border border-[#3752A6] rounded px-2 py-1 text-xs font-semibold shadow-none">
