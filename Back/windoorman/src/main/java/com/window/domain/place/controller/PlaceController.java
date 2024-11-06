@@ -30,13 +30,13 @@ public class PlaceController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> updatePlace(@RequestBody PlaceDto place) {
-        Long registeredPlaceId = placeService.updatePlace(place);
+    public ResponseEntity<?> updatePlace(@RequestBody PlaceDto place, Authentication authentication) {
+        Long registeredPlaceId = placeService.updatePlace(place, authentication);
         return ResponseEntity.ok(registeredPlaceId);
     }
 
     @DeleteMapping("/{placeId}")
-    public ResponseEntity<?> deletePlace(@PathVariable("placeId") Long placeId) {
+    public ResponseEntity<?> deletePlace(@PathVariable("placeId") Long placeId, Authentication authentication) {
         Long deletedPlaceId = placeService.deletePlace(placeId);
         return ResponseEntity.ok(deletedPlaceId);
     }

@@ -38,4 +38,8 @@ public class Place {
         if(placeDto.getName() != null) this.name = placeDto.getName();
         this.isDefault = placeDto.getIsDefault();
     }
+
+    public void setDefaultFalse() {
+        this.isDefault = false;
+    }
 }
