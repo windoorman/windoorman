@@ -14,9 +14,6 @@ public class WindowsRequestDto {
     private String name;
 
     @NotEmpty
-    private String wifiName;
-
-    @NotEmpty
-    private String wifiPassword;
+    private String deviceId;
 
 }

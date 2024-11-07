@@ -1,5 +1,8 @@
 package com.window.domain.windows.model.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.window.domain.place.entity.Place;
 import com.window.domain.place.repository.PlaceRepository;
 import com.window.domain.windows.dto.SensorDataDto;
@@ -14,10 +17,16 @@ import com.window.global.exception.CustomException;
 import com.window.global.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +35,11 @@ public class WindowsService {
 
     private final WindowsRepository windowsRepository;
     private final PlaceRepository placeRepository;
+    private final WebClient webClient;
+    private final ObjectMapper objectMapper;
+
+    @Value("${smartthings.secret}")
+    private String smartThingsSecret;
 
     public Map<String, Object> getWindows(Long placeId) {
         Place place = placeRepository.findById(placeId).
@@ -36,7 +50,31 @@ public class WindowsService {
         List<WindowsResponseDto> dtoList = new ArrayList<>();
 
         for (Windows window : windows) {
-            dtoList.add(WindowsResponseDto.createResponseDto(window));
+            String deviceId = window.getDeviceId();
+            String state = "";
+            String json = webClient.get()
+                    .uri("/" + deviceId + "/status") // API의 경로
+                    .header("Content-Type", "application/json")
+                    .headers(headers -> headers.setBearerAuth(smartThingsSecret))
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();// 응답을 처리하지 않음 (응답 본문을 무시)
+
+            try {
+                JsonNode jsonNode = new ObjectMapper().readTree(json);
+                state = jsonNode.at("/components/main/windowShade/windowShade/value").asText();
+                if (state.contains("open")) {
+                    state = "open";
+                } else if (state.contains("close")) {
+                    state = "close";
+                }
+
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            dtoList.add(WindowsResponseDto.createResponseDto(window, state));
+
         }
         Map<String, Object> map = new HashMap<>();
         map.put("placeName", place.getName());
@@ -65,29 +103,21 @@ public class WindowsService {
         Place place = placeRepository.findById(dto.getPlaceId())
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
 
-        String uuid = UUID.randomUUID().toString();
-
-        while(true){
-            Windows windows = windowsRepository.findByRaspberryId(uuid);
-            if(windows != null) uuid = UUID.randomUUID().toString();
-            else break;
+        // 이미 등록된 디바이스인지 체킹
+        Windows window = windowsRepository.findByDeviceId(dto.getDeviceId());
+        if(window != null) {
+            throw new ExceptionResponse(CustomException.DUPLICATE_DEVICEID_EXCEPTION);
         }
 
         Windows windows = Windows.builder()
                 .place(place)
                 .name(dto.getName())
-                .raspberryId(uuid)
+                .deviceId(dto.getDeviceId())
                 .build();
 
         return windowsRepository.save(windows).getId();
 
-        // 등록된 라즈베리파이에 wifi 정보와 raspberryId 보내기
 
-        // 라즈베리파이에 페어링을 하고나서 창문 등록이 가능하게 할지
-        // 이렇게 하면 wifi 정보를 바로 보내면 된다.
-
-        // 창문을 등록하고 나서 라즈베리파이에 페어링하게 할지
-        // 이렇게 하면 wifi 정보를 db에 저장해놔야함
 
     }
 
@@ -95,13 +125,15 @@ public class WindowsService {
         Windows windows = windowsRepository.findById(dto.getWindowsId())
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
 
+        // 이미 등록된 디바이스인지 체킹
+        Windows window = windowsRepository.findByDeviceId(dto.getDeviceId());
+        if(window != null) {
+            throw new ExceptionResponse(CustomException.DUPLICATE_DEVICEID_EXCEPTION);
+        }
 
         windows.updateWindow(dto);
 
         windowsRepository.save(windows);
-
-
-        // wifi 정보가 바뀌면 wifi 정보를 라즈베리파이에 update
 
     }
 
@@ -120,6 +152,104 @@ public class WindowsService {
         window.autoUpdateWindow(dto);
 
         windowsRepository.save(window);
+    }
+
+    public List<Map<String, Object>> getDevices(){
+        return webClient.get()
+                .header("Content-Type", "application/json")
+                .headers(headers -> headers.setBearerAuth(smartThingsSecret))
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(this::paresData)
+                .block();
+
+    }
+
+    private List<Map<String, Object>> paresData(String json) {
+        List<Map<String, Object>> parseList = new ArrayList<>();
+
+        try{
+            JsonNode root = objectMapper.readTree(json);
+            JsonNode items = root.path("items");
+
+            for(JsonNode item : items) {
+                Map<String, Object> map = new HashMap<>();
+                String deviceId = item.path("deviceId").asText();
+
+                map.put("deviceId", item.path("deviceId").asText());
+                map.put("label", item.path("label").asText());
+
+                boolean isRegistered = windowsRepository.existsByDeviceId(deviceId);
+                map.put("isRegistered", isRegistered);
+
+                parseList.add(map);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return parseList;
+    }
+
+    public String open(Long windowsId){
+        String jsonData = """
+        {
+            "commands": [
+                {
+                    "component": "main",
+                    "capability": "windowShade",
+                    "command": "open"
+                }
+            ]
+        }
+        """;
+        String deviceId = getDeviceId(windowsId);
+        String data = webClient.post()
+                .uri("/" + deviceId + "/commands") // API의 경로
+                .header("Content-Type", "application/json")
+                .headers(headers -> headers.setBearerAuth(smartThingsSecret))
+                .bodyValue(jsonData)  // JSON 데이터 설정
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();// 응답을 처리하지 않음 (응답 본문을 무시)
+
+        dataSubscribe(data);
+        return data;
+    }
+
+    public String close(Long windowsId){
+        String jsonData = """
+        {
+            "commands": [
+                {
+                    "component": "main",
+                    "capability": "windowShade",
+                    "command": "close"
+                }
+            ]
+        }
+        """;
+        String deviceId = getDeviceId(windowsId);
+        String data = webClient.post()
+                .uri("/" + deviceId + "/commands") // API의 경로
+                .header("Content-Type", "application/json")
+                .headers(headers -> headers.setBearerAuth(smartThingsSecret))
+                .bodyValue(jsonData)  // JSON 데이터 설정
+                .retrieve()
+                .bodyToMono(String.class)  // 응답을 처리하지 않음 (응답 본문을 무시)
+                .block();
+        dataSubscribe(data);
+        return data;
+    }
+
+    public void dataSubscribe(String data){
+        log.info("open command: {}", data);
+    }
+
+    public String getDeviceId(Long windowsId){
+        return windowsRepository.findById(windowsId)
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION))
+                .getDeviceId();
     }
 
 }

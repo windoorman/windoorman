@@ -10,5 +10,7 @@ public interface WindowsRepository extends JpaRepository<Windows, Long> {
 
     Optional<List<Windows>> findAllByPlaceId(Long placeId);
 
-    Windows findByRaspberryId(String raspberryId);
+    Windows findByDeviceId(String deviceId);
+
+    boolean existsByDeviceId(String deviceId);
 }
