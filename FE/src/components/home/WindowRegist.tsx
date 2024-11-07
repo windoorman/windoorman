@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useWindowStore from "../../stores/useWindowStore";
 
 // DeviceItem 인터페이스 정의
 interface DeviceItem {
@@ -8,29 +9,32 @@ interface DeviceItem {
 }
 
 interface WindowRegistProps {
+  homeId: number;
+  homeName: string;
   onClose: () => void;
   onSearch: () => void;
-  onRegister: (device: DeviceItem) => void; // DeviceItem 사용
   isLoading: boolean;
-  searchResult: DeviceItem[] | null; // DeviceItem 배열로 변경
+  searchResult: DeviceItem[] | null;
 }
 
 const WindowRegist: React.FC<WindowRegistProps> = ({
+  homeId,
+  homeName,
   onClose,
   onSearch,
-  onRegister,
   isLoading,
   searchResult,
 }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const RegistDevice = useWindowStore((state) => state.RegistDevice);
 
   const handleRegister = (device: DeviceItem) => {
     setIsRegistering(true);
     setTimeout(() => {
-      onRegister(device);
       setIsRegistering(false);
-      setIsRegistered(true); // 등록 완료 모달 표시
+      RegistDevice(device, homeId, homeName);
+      setIsRegistered(true);
     }, 1000);
   };
 
@@ -81,10 +85,14 @@ const WindowRegist: React.FC<WindowRegistProps> = ({
                       </div>
                       <button
                         onClick={() => handleRegister(device)}
-                        className="bg-[#3C4973] text-white px-3 py-1 rounded-lg"
-                        disabled={isRegistering}
+                        className={`px-3 py-1 rounded-lg ${
+                          device.isRegistered
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-[#3C4973] text-white"
+                        }`}
+                        disabled={isRegistering || device.isRegistered}
                       >
-                        {isRegistering ? (
+                        {isRegistering && !device.isRegistered ? (
                           <span className="spinner"></span>
                         ) : (
                           "등록"

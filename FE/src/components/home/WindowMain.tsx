@@ -34,7 +34,7 @@ const WindowMain: React.FC<WindowMainProps> = ({
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState<DeviceItem[] | null>(null); // DeviceItem 배열로 변경
+  const [searchResult, setSearchResult] = useState<DeviceItem[] | null>(null);
   const [toggleState, setToggleState] = useState<{ [id: string]: boolean }>({});
 
   const onClickAddWindow = () => {
@@ -51,30 +51,17 @@ const WindowMain: React.FC<WindowMainProps> = ({
     }, 1000);
   };
 
-  const handleRegister = (device: DeviceItem) => {
-    const newWindow = {
-      id: windows.length + 1,
-      name: device.label,
-      state: device.isRegistered ? "closed" : "open",
-    };
-
-    useWindowStore.setState({
-      windows: [...windows, newWindow],
-    });
-
-    setSearchResult(
-      (prev) => prev?.filter((d) => d.deviceId !== device.deviceId) || null
-    );
-  };
-
   const handleClose = () => {
     setIsModalOpen(false);
+    if (selectedHomeId) {
+      fetchWindows(selectedHomeId); // Refresh windows after modal closes
+    }
   };
 
-  const handleToggle = (id: string) => {
+  const handleToggle = (windowsid: number) => {
     setToggleState((prevState) => ({
       ...prevState,
-      [id]: !prevState[id],
+      [windowsid]: !prevState[windowsid],
     }));
   };
 
@@ -120,7 +107,7 @@ const WindowMain: React.FC<WindowMainProps> = ({
           <ul className="mt-4 grid grid-cols-2 gap-4">
             {windows.map((window) => (
               <li
-                key={window.id}
+                key={window.windowsid}
                 className="flex flex-col items-center p-4 bg-gray-100 rounded-lg shadow-md"
               >
                 <img
@@ -133,17 +120,19 @@ const WindowMain: React.FC<WindowMainProps> = ({
                 </span>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs text-gray-500">
-                    자동 {toggleState[window.id] ? "ON" : "OFF"}
+                    자동 {toggleState[window.windowsid] ? "ON" : "OFF"}
                   </span>
                   <button
-                    onClick={() => handleToggle(window.id.toString())}
+                    onClick={() => handleToggle(window.windowsid)}
                     className={`w-10 h-5 rounded-full ${
-                      toggleState[window.id] ? "bg-[#FFA500]" : "bg-gray-300"
+                      toggleState[window.windowsid]
+                        ? "bg-[#FFA500]"
+                        : "bg-gray-300"
                     }`}
                   >
                     <div
                       className={`w-4 h-4 rounded-full bg-white transform ${
-                        toggleState[window.id]
+                        toggleState[window.windowsid]
                           ? "translate-x-5"
                           : "translate-x-0"
                       } transition-transform`}
@@ -163,9 +152,10 @@ const WindowMain: React.FC<WindowMainProps> = ({
       {windows.length > 0 ? renderWindows() : renderNoWindows()}
       {isModalOpen && (
         <WindowRegist
+          homeId={selectedHomeId ?? 0}
+          homeName={selectedHomeName}
           onClose={handleClose}
           onSearch={handleSearch}
-          onRegister={handleRegister}
           isLoading={isLoading}
           searchResult={searchResult}
         />
