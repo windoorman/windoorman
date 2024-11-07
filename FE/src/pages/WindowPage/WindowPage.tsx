@@ -79,7 +79,14 @@ const WindowPage = () => {
       <div className="mx-8 ">
         <img src={windowWind} alt="창문 환기" />
       </div>
-      {homeList.length > 0 ? <WindowMain /> : <HomeMain />}
+      {homeList.length > 0 ? (
+        <WindowMain
+          selectedHomeId={selectedHomeId}
+          selectedHomeName={selectedHomeName}
+        />
+      ) : (
+        <HomeMain />
+      )}
     </div>
   );
 };
