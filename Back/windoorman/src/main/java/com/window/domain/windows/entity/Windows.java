@@ -17,10 +17,10 @@ public class Windows {
 
 
     @Builder
-    public Windows(Place place, String name, String raspberryId, boolean isAuto) {
+    public Windows(Place place, String name, String deviceId, boolean isAuto) {
         this.place = place;
         this.name = name;
-        this.raspberryId = raspberryId;
+        this.deviceId = deviceId;
         this.isAuto = isAuto;
     }
 
@@ -35,8 +35,8 @@ public class Windows {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "raspberry_id", nullable = false, length = 100)
-    private String raspberryId;
+    @Column(name = "device_id", nullable = false, length = 100)
+    private String deviceId;
 
     @ColumnDefault("false")
     @Column(name = "is_auto", nullable = false, columnDefinition = "TINYINT(1)")
@@ -44,6 +44,7 @@ public class Windows {
 
     public void updateWindow(WindowsUpdateRequestDto dto){
         if(dto.getName() != null) this.name = dto.getName();
+        if(dto.getDeviceId() != null) this.deviceId = dto.getDeviceId();
     }
 
     public void autoUpdateWindow(WindowsToggleRequestDto dto){

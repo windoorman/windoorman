@@ -12,10 +12,10 @@ public class WindowsResponseDto {
 
     private Long windowsId;
     private String name;
-    private String raspberryId;
+    private String state;
     private boolean isAuto;
 
-    public static WindowsResponseDto createResponseDto(Windows windows) {
-        return new WindowsResponseDto(windows.getId(), windows.getName(), windows.getRaspberryId(), windows.isAuto());
+    public static WindowsResponseDto createResponseDto(Windows windows, String state) {
+        return new WindowsResponseDto(windows.getId(), windows.getName(), state, windows.isAuto());
     }
 }

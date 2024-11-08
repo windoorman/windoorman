@@ -1,5 +1,8 @@
 package com.window.domain.windows.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.window.domain.windows.dto.request.WindowsRequestDto;
 import com.window.domain.windows.dto.request.WindowsToggleRequestDto;
 import com.window.domain.windows.dto.request.WindowsUpdateRequestDto;
@@ -23,6 +26,7 @@ import java.util.Map;
 public class WindowsController {
 
     private final WindowsService windowService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/{placeId}")
     public ResponseEntity<?> getWindows(@PathVariable Long placeId) {
@@ -68,5 +72,22 @@ public class WindowsController {
 
         return ResponseEntity.status(200).body("활성화 변경");
     }
+
+    @GetMapping("/open/{windowsId}")
+    public ResponseEntity<?> openWindow(@PathVariable("windowsId") Long windowsId) throws JsonProcessingException {
+        String data = windowService.open(windowsId);
+        JsonNode jsonData = objectMapper.readTree(data);
+        return ResponseEntity.status(200).body(jsonData);
+    }
+
+    @GetMapping("/close/{windowsId}")
+    public ResponseEntity<?> closeWindow(@PathVariable("windowsId") Long windowsId) throws JsonProcessingException {
+        String data = windowService.close(windowsId);
+        JsonNode jsonData = objectMapper.readTree(data);
+        return ResponseEntity.status(200).body(jsonData);
+    }
+
+
+
 
 }
