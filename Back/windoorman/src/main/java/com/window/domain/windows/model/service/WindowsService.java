@@ -32,19 +32,12 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class WindowsService {
 
-<<<<<<< Back/windoorman/src/main/java/com/window/domain/windows/model/service/WindowsService.java
-    @Autowired
-    private WindowsRepository windowsRepository;
-    @Autowired
-    private PlaceRepository placeRepository;
+
 
     private final RedisTemplate<String, Object> redisTemplate;
-    public WindowsService(RedisTemplate<String, Object> redisTemplate){
-        this.redisTemplate = redisTemplate;
-    }
-=======
     private final WindowsRepository windowsRepository;
     private final PlaceRepository placeRepository;
     private final WebClient webClient;
@@ -52,7 +45,7 @@ public class WindowsService {
 
     @Value("${smartthings.secret}")
     private String smartThingsSecret;
->>>>>>> Back/windoorman/src/main/java/com/window/domain/windows/model/service/WindowsService.java
+
 
     public Map<String, Object> getWindows(Long placeId) {
         Place place = placeRepository.findById(placeId).
