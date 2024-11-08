@@ -1,4 +1,4 @@
-package com.window.domain.windowAction;
+package com.window.domain.windowAction.entity;
 
 
 import com.window.domain.windows.entity.Windows;
