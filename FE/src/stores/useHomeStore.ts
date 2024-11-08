@@ -12,8 +12,10 @@ export interface Home {
 interface HomeState {
   homes: Home[];
   defaultHome: Home | null;
+  selectedHome: Home | null; // 선택된 홈
+  setSelectedHome: (home: Home) => void; // 선택된 홈 설정 함수 추가
   fetchHomes: () => Promise<void>;
-  resetHomes: () => void; // 초기화 함수 추가
+  resetHomes: () => void;
   RegistHome: (home: Home) => Promise<void>;
   updateHome: (home: Home) => Promise<void>;
   deleteHome: (homeId: number) => Promise<void>;
@@ -22,6 +24,9 @@ interface HomeState {
 const useHomeStore = create<HomeState>((set) => ({
   homes: [],
   defaultHome: null,
+  selectedHome: null,
+
+  setSelectedHome: (home: Home) => set({ selectedHome: home }), // 선택된 홈 설정 함수
 
   fetchHomes: async () => {
     try {
@@ -29,21 +34,21 @@ const useHomeStore = create<HomeState>((set) => ({
       set({ homes: response.data });
       set((state) => {
         const defaultHome = state.homes.find((home) => home.isDefault) || null;
-        return { defaultHome };
+        return { defaultHome, selectedHome: defaultHome }; // defaultHome을 selectedHome으로도 설정
       });
     } catch (error) {
-      console.error("Failed to fetch homes: ", error);
+      console.error("Failed to fetch homes:", error);
     }
   },
 
-  resetHomes: () => set({ homes: [], defaultHome: null }), // 초기화 구현
+  resetHomes: () => set({ homes: [], defaultHome: null, selectedHome: null }),
 
   RegistHome: async (home: Home) => {
     try {
       const response = await axiosApi.post<Home>("/places", home);
       set((state) => ({ homes: [...state.homes, home] }));
       if (home.isDefault) {
-        set((_state) => ({ defaultHome: home }));
+        set((_state) => ({ defaultHome: home, selectedHome: home }));
       }
       console.log("Registered homeId:", response);
     } catch (error) {
@@ -69,6 +74,7 @@ const useHomeStore = create<HomeState>((set) => ({
         return {
           homes: newHomes,
           defaultHome: home.isDefault ? home : state.defaultHome,
+          selectedHome: home.isDefault ? home : state.selectedHome,
         };
       });
 
@@ -86,7 +92,7 @@ const useHomeStore = create<HomeState>((set) => ({
       }));
       set((state) => {
         const defaultHome = state.homes.find((home) => home.isDefault) || null;
-        return { defaultHome };
+        return { defaultHome, selectedHome: defaultHome };
       });
       console.log("Deleted homeId:", homeId);
     } catch (error) {

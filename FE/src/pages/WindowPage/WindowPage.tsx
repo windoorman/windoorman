@@ -7,13 +7,14 @@ import useHomeStore from "../../stores/useHomeStore";
 
 const WindowPage = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedHomeId, setSelectedHomeId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const homeList = useHomeStore((state) => state.homes);
   const defaultHome = useHomeStore((state) => state.defaultHome);
+  const selectedHome = useHomeStore((state) => state.selectedHome);
   const fetchHomes = useHomeStore((state) => state.fetchHomes);
+  const setSelectedHome = useHomeStore((state) => state.setSelectedHome);
 
   const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
 
@@ -43,18 +44,15 @@ const WindowPage = () => {
     };
   }, [fetchHomes, homeList.length]);
 
-  // defaultHome이 업데이트될 때 selectedHomeId를 설정
   useEffect(() => {
-    if (defaultHome) {
-      setSelectedHomeId(defaultHome.id || null);
+    if (defaultHome && !selectedHome) {
+      setSelectedHome(defaultHome);
     }
-  }, [defaultHome]);
-
-  const selectedHomeName =
-    homeList.find((home) => home.id === selectedHomeId)?.name || "홈";
+  }, [defaultHome, selectedHome, setSelectedHome]);
 
   const handleHomeSelect = (id: number) => {
-    setSelectedHomeId(id);
+    const selected = homeList.find((home) => home.id === id);
+    if (selected) setSelectedHome(selected);
     setDropdownOpen(false);
   };
 
@@ -69,21 +67,18 @@ const WindowPage = () => {
             <div className="spinner"></div>
           ) : (
             <>
-              <span>{selectedHomeName}</span>
+              <span>{selectedHome ? selectedHome.name : "홈"}</span>
               <span className="text-lg">{isDropdownOpen ? "▲" : "▼"}</span>
             </>
           )}
         </ul>
         {isDropdownOpen && <Dropdown onSelect={handleHomeSelect} />}
       </div>
-      <div className="mx-8 ">
+      <div className="mx-8">
         <img src={windowWind} alt="창문 환기" />
       </div>
-      {homeList.length > 0 ? (
-        <WindowMain
-          selectedHomeId={selectedHomeId}
-          selectedHomeName={selectedHomeName}
-        />
+      {homeList.length > 0 && selectedHome ? (
+        <WindowMain selectedHome={selectedHome} />
       ) : (
         <HomeMain />
       )}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import sadGhost from "../../assets/window/mynaui_sad-ghost-solid.png";
 import useWindowStore from "../../stores/useWindowStore";
 import openedWindow from "../../assets/window/openedWindow.png";
@@ -6,6 +7,7 @@ import closedWindow from "../../assets/window/closedWindow.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import WindowRegist from "./WindowRegist";
+import { Home } from "../../stores/useHomeStore";
 
 interface DeviceItem {
   isRegistered: boolean;
@@ -14,23 +16,20 @@ interface DeviceItem {
 }
 
 interface WindowMainProps {
-  selectedHomeId: number | null;
-  selectedHomeName: string;
+  selectedHome: Home;
 }
 
-const WindowMain: React.FC<WindowMainProps> = ({
-  selectedHomeId,
-  selectedHomeName,
-}) => {
+const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
   const fetchWindows = useWindowStore((state) => state.fetchWindows);
   const windows = useWindowStore((state) => state.windows);
   const fetchDevices = useWindowStore((state) => state.fetchDevices);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (selectedHomeId) {
-      fetchWindows(selectedHomeId);
+    if (selectedHome.id) {
+      fetchWindows(selectedHome.id);
     }
-  }, [fetchWindows, selectedHomeId]);
+  }, [fetchWindows, selectedHome.id]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,27 +41,29 @@ const WindowMain: React.FC<WindowMainProps> = ({
     setSearchResult(null);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setIsLoading(true);
-    setTimeout(async () => {
-      const response = await fetchDevices();
-      setIsLoading(false);
-      setSearchResult(response.length > 0 ? response : null);
-    }, 1000);
+    const response = await fetchDevices();
+    setIsLoading(false);
+    setSearchResult(response.length > 0 ? response : null);
   };
 
   const handleClose = () => {
     setIsModalOpen(false);
-    if (selectedHomeId) {
-      fetchWindows(selectedHomeId); // Refresh windows after modal closes
+    if (selectedHome.id) {
+      fetchWindows(selectedHome.id); // 창문 등록 후 업데이트
     }
   };
 
-  const handleToggle = (windowsid: number) => {
+  const handleToggle = (windowId: number) => {
     setToggleState((prevState) => ({
       ...prevState,
-      [windowsid]: !prevState[windowsid],
+      [windowId]: !prevState[windowId],
     }));
+  };
+
+  const navigateMonitoring = () => {
+    navigate("/monitoring");
   };
 
   const renderNoWindows = () => (
@@ -94,7 +95,7 @@ const WindowMain: React.FC<WindowMainProps> = ({
       <div className="px-4 mb-2">
         <div className="flex justify-between">
           <h2 className="text-[#3C4973] text-2xl font-semibold">
-            {`${selectedHomeName}`}
+            {selectedHome.name}
           </h2>
           <button
             onClick={onClickAddWindow}
@@ -104,7 +105,7 @@ const WindowMain: React.FC<WindowMainProps> = ({
           </button>
         </div>
         <div className="max-h-82 overflow-y-auto">
-          <ul className="mt-4 grid grid-cols-2 gap-4">
+          <ul className="mt-4 grid grid-cols-2 gap-4 mb-4">
             {windows.map((window) => (
               <li
                 key={window.windowsid}
@@ -112,6 +113,7 @@ const WindowMain: React.FC<WindowMainProps> = ({
               >
                 <img
                   src={window.state === "open" ? openedWindow : closedWindow}
+                  onClick={navigateMonitoring}
                   alt={`${window.name} 상태`}
                   className="w-16 h-16 mb-2"
                 />
@@ -152,8 +154,8 @@ const WindowMain: React.FC<WindowMainProps> = ({
       {windows.length > 0 ? renderWindows() : renderNoWindows()}
       {isModalOpen && (
         <WindowRegist
-          homeId={selectedHomeId ?? 0}
-          homeName={selectedHomeName}
+          homeId={selectedHome.id ?? 0}
+          homeName={selectedHome.name}
           onClose={handleClose}
           onSearch={handleSearch}
           isLoading={isLoading}

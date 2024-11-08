@@ -54,6 +54,7 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
     <script>
       if ("serviceWorker" in navigator) {
         // Register a service worker hosted at the root of the
@@ -78,5 +79,13 @@
         console.log("Service workers are not supported.");
       }
     </script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e0aca00eed76f6aeba7edb4db6827b39&autoload=false"
+    ></script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e0aca00eed76f6aeba7edb4db6827b39&libraries=services,clusterer,drawing"
+    ></script>
   </body>
 </html>

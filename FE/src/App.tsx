@@ -17,6 +17,7 @@ import HomeRegist from "./components/home/HomeRegist";
 import HomeUpdate from "./components/home/HomeUpdate";
 import ProtectedRoute from "./pages/ProtectedRoute"; // ProtectedRoute 추가
 import ReportPage from "./components/info/ReportPage";
+import MonitoringMain from "./components/monitoring/MonitoringMain";
 
 function App() {
   const location = useLocation();
@@ -83,6 +84,15 @@ function App() {
           element={
             <ProtectedRoute>
               <ReportPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/monitoring"
+          element={
+            <ProtectedRoute>
+              <MonitoringMain />
             </ProtectedRoute>
           }
         />
