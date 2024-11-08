@@ -5,52 +5,54 @@ import com.window.domain.windows.dto.SensorDataDto;
 import com.window.global.exception.CustomException;
 import com.window.global.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
+@Slf4j
 public class MonitoringService {
     private final Map<Long, Object> latestDataMap = new ConcurrentHashMap<>();
     private final RedisTemplate<String, Object> redisTemplate;
+    private final EmitterRepository emitterRepository;
 
-    @Autowired
-    private EmitterRepository emitterRepository;
-
-    public MonitoringService(RedisTemplate<String, Object> redisTemplate) {
+    public MonitoringService(RedisTemplate<String, Object> redisTemplate, EmitterRepository emitterRepository) {
         this.redisTemplate = redisTemplate;
+        this.emitterRepository = emitterRepository;
     }
 
     public SseEmitter subscribe(Long windowId) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         emitterRepository.save(windowId, sseEmitter);
 
-        System.out.println("subscribe: " + windowId);
-        System.out.println(emitterRepository.size());
-        System.out.println(emitterRepository.get(windowId));
-        System.out.println("======================");
+        log.info("subscribe: " + windowId);
+        log.info(String.valueOf(emitterRepository.size()));
+        log.info(String.valueOf(emitterRepository.get(windowId)));
+        log.info("======================");
 
         sseEmitter.onCompletion(()-> {
             emitterRepository.deleteById(windowId);
             saveLastSensorDataToRedis(windowId);
-            System.out.println("complete: " + windowId);
+            log.info("complete: " + windowId);
         });
         sseEmitter.onTimeout(() -> {
             emitterRepository.deleteById(windowId);
             saveLastSensorDataToRedis(windowId);
-            System.out.println("timeout: " + windowId);
+            log.info("timeout: " + windowId);
         });
         sseEmitter.onError((e) -> {
             emitterRepository.deleteById(windowId);
             saveLastSensorDataToRedis(windowId);
-            System.out.println("error: " + windowId);
+            log.info("error: " + windowId);
         });
 
 
@@ -84,7 +86,7 @@ public class MonitoringService {
 
         Object lastSensorData = getLastSensorData(windowId);
         redisTemplate.opsForValue().set("lastSensorData:" + windowId, lastSensorData);
-        System.out.println("Stored last sensor data for windowId " + windowId);
+        log.info("Stored last sensor data for windowId " + windowId);
 
     }
 
