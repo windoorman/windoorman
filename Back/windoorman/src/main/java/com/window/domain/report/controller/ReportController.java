@@ -1,7 +1,8 @@
 package com.window.domain.report.controller;
 
 import com.window.domain.report.dto.ActionsReportResponseDto;
-import com.window.domain.report.dto.AirReportResponseDto;
+import com.window.domain.report.dto.AirReportDto;
+import com.window.domain.report.dto.ReportResponseDto;
 import com.window.domain.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +24,15 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/air/{placeId}/{reportDate}")
+    @GetMapping("/{placeId}/{reportDate}")
     public ResponseEntity<?> findAirReport(@PathVariable Long placeId, @PathVariable LocalDate reportDate, Authentication authentication) {
-        AirReportResponseDto response = reportService.findAirReport(placeId, reportDate, authentication);
+        ReportResponseDto response = reportService.findAirReport(placeId, reportDate, authentication);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/actions/{windowId}")
-    public ResponseEntity<?> findActionReport(@PathVariable Long windowId, Authentication authentication) {
-        List<ActionsReportResponseDto> responses = reportService.findActionsReport(windowId, authentication);
+    @GetMapping("/actions/{windowId}/{reportDate}")
+    public ResponseEntity<?> findActionReport(@PathVariable Long windowId,@PathVariable LocalDate reportDate, Authentication authentication) {
+        List<ActionsReportResponseDto> responses = reportService.findActionsReport(windowId, reportDate, authentication);
         return ResponseEntity.ok(responses);
     }
 }
