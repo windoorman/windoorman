@@ -8,61 +8,55 @@ declare global {
 }
 
 const MapContent = () => {
-  const HomeData = useHomeStore((state) => state.selectedHome);
+  const HomesData = useHomeStore((state) => state.homes);
 
   useEffect(() => {
     if (window.kakao && window.kakao.maps) {
       window.kakao.maps.load(() => {
-        const container = document.getElementById("map"); // 지도를 표시할 div
+        const container = document.getElementById("map");
         const options = {
-          center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 초기 중심 좌표 (예: 제주도)
-          level: 3, // 확대 레벨
+          center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 초기 중심 좌표
+          level: 12,
         };
 
-        // 지도 생성
         const map = new window.kakao.maps.Map(container, options);
 
-        // Geocoder가 준비되었는지 확인
         if (window.kakao.maps.services) {
           const geocoder = new window.kakao.maps.services.Geocoder();
 
-          geocoder.addressSearch(
-            HomeData?.address,
-            function (result: any, status: any) {
-              if (status === window.kakao.maps.services.Status.OK) {
-                const coords = new window.kakao.maps.LatLng(
-                  result[0].y,
-                  result[0].x
-                );
+          // 각 home에 대해 주소 검색과 마커 생성
+          HomesData.forEach((home) => {
+            geocoder.addressSearch(
+              home.address,
+              function (result: any, status: any) {
+                if (status === window.kakao.maps.services.Status.OK) {
+                  const coords = new window.kakao.maps.LatLng(
+                    result[0].y,
+                    result[0].x
+                  );
 
-                // 마커를 생성합니다
-                const marker = new window.kakao.maps.Marker({
-                  map: map,
-                  position: coords,
-                });
+                  // 마커 생성
+                  const marker = new window.kakao.maps.Marker({
+                    map: map,
+                    position: coords,
+                  });
 
-                // 인포윈도우를 생성합니다
-                const infowindow = new window.kakao.maps.InfoWindow({
-                  content: `<div style="padding:5px;font-size:12px;">${
-                    HomeData?.address || "주소 정보 없음"
-                  }</div>`,
-                });
+                  // 인포윈도우 생성
+                  const infowindow = new window.kakao.maps.InfoWindow({
+                    content: `<div style="padding:5px;font-size:12px;">${home.address}</div>`,
+                  });
 
-                // 마커에 클릭이벤트를 등록합니다
-                window.kakao.maps.event.addListener(
-                  marker,
-                  "click",
-                  function () {
-                    // 마커 위에 인포윈도우를 표시합니다
+                  // 마커 클릭 이벤트 추가
+                  window.kakao.maps.event.addListener(marker, "click", () => {
                     infowindow.open(map, marker);
-                  }
-                );
+                  });
 
-                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                map.setCenter(coords);
+                  // 지도의 중심을 마지막 결과값으로 설정 (혹은 첫 번째 중심 좌표 유지 가능)
+                  map.setCenter(coords);
+                }
               }
-            }
-          );
+            );
+          });
         } else {
           console.error(
             "Kakao Maps services 라이브러리가 로드되지 않았습니다."
@@ -72,15 +66,11 @@ const MapContent = () => {
     } else {
       console.error("Kakao Maps API가 로드되지 않았습니다.");
     }
-  }, [HomeData]); // HomeData가 변경될 때마다 실행
+  }, [HomesData]);
 
   return (
     <div>
-      <div className="mt-8 pt-2 border-t-2 rounded-3xl">
-        <p className="text-center text-lg font-semibold text-[#3C4973]">
-          지도 컨텐츠
-        </p>
-      </div>
+      <div className="mt-8 pt-2 border-t-2 rounded-3xl"></div>
       <div
         id="map"
         style={{ width: "100%", height: "400px", marginTop: "16px" }}

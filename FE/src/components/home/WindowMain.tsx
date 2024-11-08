@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import sadGhost from "../../assets/window/mynaui_sad-ghost-solid.png";
 import useWindowStore from "../../stores/useWindowStore";
 import openedWindow from "../../assets/window/openedWindow.png";
@@ -23,7 +23,7 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
   const fetchWindows = useWindowStore((state) => state.fetchWindows);
   const windows = useWindowStore((state) => state.windows);
   const fetchDevices = useWindowStore((state) => state.fetchDevices);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedHome.id) {
@@ -62,9 +62,7 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
     }));
   };
 
-  const navigateMonitoring = () => {
-    navigate("/monitoring");
-  };
+  const navigateMonitoring = () => {};
 
   const renderNoWindows = () => (
     <div className="mt-8 pt-2 border-t-2 rounded-3xl">

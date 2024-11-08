@@ -11,13 +11,7 @@ const Navbar = () => {
 
   const buttons = [
     {
-      paths: [
-        "/window",
-        "/home",
-        "/home/regist",
-        "/home/update",
-        "/monitoring",
-      ], // 여러 경로를 배열로 설정
+      paths: ["/window", "/home", "/home/regist", "/home/update"], // 여러 경로를 배열로 설정
       label: "홈",
       icon: Home,
       activeIcon: ActiveHome,
@@ -29,7 +23,7 @@ const Navbar = () => {
       activeIcon: ActiveCalender,
     },
     {
-      paths: ["/info", "/report"],
+      paths: ["/monitoring", "/report"],
       label: "정보",
       icon: Profile,
       activeIcon: ActiveProfile,

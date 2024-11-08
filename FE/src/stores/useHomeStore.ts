@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axiosApi from "../instance/axiosApi";
+import useUserStore from "./useUserStore";
 
 export interface Home {
   id?: number;
@@ -30,8 +31,13 @@ const useHomeStore = create<HomeState>((set) => ({
 
   fetchHomes: async () => {
     try {
-      const response = await axiosApi.get<Home[]>("/places");
-      set({ homes: response.data });
+      const response = await axiosApi.get<{
+        placeDtoList: Home[];
+        nickName: string;
+      }>("/places");
+      set({ homes: response.data.placeDtoList });
+      // 유저네임 설정
+      useUserStore.getState().setUserName(response.data.nickName);
       set((state) => {
         const defaultHome = state.homes.find((home) => home.isDefault) || null;
         return { defaultHome, selectedHome: defaultHome }; // defaultHome을 selectedHome으로도 설정
