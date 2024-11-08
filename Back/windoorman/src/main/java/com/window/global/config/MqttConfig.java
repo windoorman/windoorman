@@ -2,6 +2,7 @@ package com.window.global.config;
 
 import com.window.domain.monitoring.service.MonitoringService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class MqttConfig {
 
     @Value("${mqtt.broker.url}")
@@ -64,7 +66,7 @@ public class MqttConfig {
             String payload = message.getPayload().toString();
             String topic = message.getHeaders().get("mqtt_receivedTopic").toString();
             Long windowId = extractWindowIdFromTopic(topic);
-            System.out.println("Received message: " + payload + " from topic: " + topic);
+            log.info("Received message: " + payload + " from topic: " + topic);
 
             // Process your message here, e.g., save to Redis or update in-memory cache
             monitoringService.processSensorData(windowId, payload);
