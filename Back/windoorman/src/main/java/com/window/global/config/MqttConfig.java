@@ -3,6 +3,7 @@ package com.window.global.config;
 import com.window.domain.monitoring.service.MonitoringService;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -19,13 +20,16 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 @RequiredArgsConstructor
 public class MqttConfig {
 
-    private static final String BROKER_URL = "tcp://localhost:1883"; // Update with your broker URL
-    private static final String CLIENT_ID = "spring-mqtt-client";
+    @Value("${mqtt.broker.url}")
+    private String brokerUrl;
+
+    @Value("${mqtt.client.id}")
+    private String clientId;
     private final MonitoringService monitoringService;
     @Bean
     public MqttConnectOptions mqttConnectOptions() {
         MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[]{BROKER_URL});
+        options.setServerURIs(new String[]{brokerUrl});
         options.setCleanSession(true);
         return options;
     }
@@ -38,7 +42,7 @@ public class MqttConfig {
     @Bean
     public MqttPahoMessageDrivenChannelAdapter inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(CLIENT_ID, mqttClientFactory(), "sensor/#");
+                new MqttPahoMessageDrivenChannelAdapter(clientId, mqttClientFactory(), "sensor/#");
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
