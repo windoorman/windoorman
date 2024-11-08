@@ -15,7 +15,7 @@ import KakaRedirect from "./pages/LoginPage/KakaoRedirect";
 import HomeList from "./components/home/HomeList";
 import HomeRegist from "./components/home/HomeRegist";
 import HomeUpdate from "./components/home/HomeUpdate";
-import ProtectedRoute from "./pages/ProtectedRoute"; // ProtectedRoute 추가
+import ProtectedRoute from "./pages/ProtectedRoute";
 import ReportPage from "./components/info/ReportPage";
 import MonitoringMain from "./components/monitoring/MonitoringMain";
 

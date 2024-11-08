@@ -33,11 +33,11 @@ const useHomeStore = create<HomeState>((set) => ({
     try {
       const response = await axiosApi.get<{
         placeDtoList: Home[];
-        nickName: string;
+        nickname: string;
       }>("/places");
       set({ homes: response.data.placeDtoList });
       // 유저네임 설정
-      useUserStore.getState().setUserName(response.data.nickName);
+      useUserStore.getState().setUserName(response.data.nickname);
       set((state) => {
         const defaultHome = state.homes.find((home) => home.isDefault) || null;
         return { defaultHome, selectedHome: defaultHome }; // defaultHome을 selectedHome으로도 설정

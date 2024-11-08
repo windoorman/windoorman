@@ -51,15 +51,11 @@ const useWindowStore = create<WindowState>((set) => ({
       return []; // 오류 발생 시 빈 배열 반환
     }
   },
-  RegistDevice: async (
-    device: DeviceItem,
-    homeId: number,
-    homeName: string
-  ) => {
+  RegistDevice: async (device: DeviceItem, homeId: number) => {
     try {
       const body = {
         placeId: homeId,
-        name: homeName,
+        name: device.label,
         deviceId: device.deviceId,
       };
       await axiosApi.post<DeviceItem>("/windows", body);

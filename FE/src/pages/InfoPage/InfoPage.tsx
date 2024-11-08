@@ -1,7 +1,9 @@
+import InfoMain from "../../components/info/InfoMain";
+
 const InfoPage = () => {
   return (
     <div>
-      <h1>Info Page</h1>
+      <InfoMain />
     </div>
   );
 };
