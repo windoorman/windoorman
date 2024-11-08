@@ -3,7 +3,7 @@ package com.window.domain.report.dto;
 import lombok.Builder;
 
 @Builder
-public record AirReportResponseDto(
+public record AirReportDto(
         Long reportId,
         double lowTemperature,
         double highTemperature,
