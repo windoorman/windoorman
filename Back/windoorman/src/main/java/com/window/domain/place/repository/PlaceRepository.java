@@ -13,7 +13,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findById(Long id);
 
-    boolean existsByIdAndMember(Long id, Member member);
+    Optional<Place> findByIdAndMember(Long id, Member member);
 
     void deleteById(Long id);
 }
