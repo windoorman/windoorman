@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ActionsReportResponseDto(
-    String open,
-    LocalDateTime openTime
+        Long actionReportId,
+        String open,
+        LocalDateTime openTime
 ) {
 }
