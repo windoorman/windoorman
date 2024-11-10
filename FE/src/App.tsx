@@ -88,14 +88,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/monitoring"
-          element={
-            <ProtectedRoute>
-              <MonitoringMain />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/monitoring" element={<MonitoringMain />} />
 
         {/* 기본 경로 */}
 
