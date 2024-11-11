@@ -25,14 +25,14 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping("/{placeId}/{reportDate}")
-    public ResponseEntity<?> findAirReport(@PathVariable Long placeId, @PathVariable LocalDate reportDate, Authentication authentication) {
-        ReportResponseDto response = reportService.findAirReport(placeId, reportDate, authentication);
+    public ResponseEntity<?> findAirReport(@PathVariable Long placeId, @PathVariable LocalDate reportDate) {
+        ReportResponseDto response = reportService.findAirReport(placeId, reportDate);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/actions/{windowId}/{reportDate}")
-    public ResponseEntity<?> findActionReport(@PathVariable Long windowId,@PathVariable LocalDate reportDate, Authentication authentication) {
-        List<ActionsReportResponseDto> responses = reportService.findActionsReport(windowId, reportDate, authentication);
+    public ResponseEntity<?> findActionReport(@PathVariable Long windowId,@PathVariable LocalDate reportDate) {
+        List<ActionsReportResponseDto> responses = reportService.findActionsReport(windowId, reportDate);
         return ResponseEntity.ok(responses);
     }
 }
