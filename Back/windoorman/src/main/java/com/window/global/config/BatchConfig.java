@@ -77,7 +77,10 @@ public class BatchConfig {
         return new JdbcCursorItemReaderBuilder<Schedule>()
                 .name("jdbcCursorItemReader")
                 .fetchSize(100)
-                .sql("SELECT s.id, s.start_time, s.end_time, w.id as windows_id, w.device_id FROM schedule s left JOIN windows w ON s.windows_id = w.id where is_activate = true and DATE_FORMAT(s.start_time, '%H:%i') = ?")
+                .sql("SELECT s.id, s.start_time, s.end_time, w.id as windows_id, w.device_id " +
+                        "FROM schedule s left JOIN windows w ON s.windows_id = w.id " +
+                        "JOIN schedule_group sg ON s.group_id = sg.id " +
+                        "where sg.is_activate = true and DATE_FORMAT(s.start_time, '%H:%i') = ?")
                 .preparedStatementSetter(ps -> {
                     String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
                     ps.setString(1, currentTime);
