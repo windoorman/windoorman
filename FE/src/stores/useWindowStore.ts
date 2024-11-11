@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axiosApi from "../instance/axiosApi";
 
 export interface WindowItem {
-  windowsid: number;
+  windowsId: number;
   name: string;
   state: string;
   auto: boolean;

@@ -23,7 +23,12 @@ const Navbar = () => {
       activeIcon: ActiveHome,
     },
     {
-      paths: ["/schedule"],
+      paths: [
+        "/schedule",
+        "/schedule/select",
+        "/schedule/regist",
+        "/schedule/update",
+      ],
       label: "일정",
       icon: Calender,
       activeIcon: ActiveCalender,

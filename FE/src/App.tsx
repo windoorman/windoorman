@@ -18,6 +18,8 @@ import HomeUpdate from "./components/home/HomeUpdate";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import ReportPage from "./components/info/ReportPage";
 import MonitoringMain from "./components/monitoring/MonitoringMain";
+import SelectWindow from "./components/schedule/SelectWindow";
+import ScheduleRegist from "./components/schedule/ScheduleRegist";
 
 function App() {
   const location = useLocation();
@@ -88,7 +90,31 @@ function App() {
           }
         />
 
-        <Route path="/monitoring" element={<MonitoringMain />} />
+        <Route
+          path="/monitoring"
+          element={
+            <ProtectedRoute>
+              <MonitoringMain />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/schedule/select"
+          element={
+            <ProtectedRoute>
+              <SelectWindow />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/schedule/regist"
+          element={
+            <ProtectedRoute>
+              <ScheduleRegist />
+            </ProtectedRoute>
+          }
+        />
 
         {/* 기본 경로 */}
 

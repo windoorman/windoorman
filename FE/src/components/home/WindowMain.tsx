@@ -108,7 +108,7 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
           <ul className="mt-4 grid grid-cols-2 gap-4 mb-4">
             {windows.map((window) => (
               <li
-                key={window.windowsid}
+                key={window.windowsId}
                 className="flex flex-col items-center p-4 bg-gray-100 rounded-lg shadow-md"
               >
                 <img
@@ -122,19 +122,19 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
                 </span>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs text-gray-500">
-                    자동 {toggleState[window.windowsid] ? "ON" : "OFF"}
+                    자동 {toggleState[window.windowsId] ? "ON" : "OFF"}
                   </span>
                   <button
-                    onClick={() => handleToggle(window.windowsid)}
+                    onClick={() => handleToggle(window.windowsId)}
                     className={`w-10 h-5 rounded-full ${
-                      toggleState[window.windowsid]
+                      toggleState[window.windowsId]
                         ? "bg-[#FFA500]"
                         : "bg-gray-300"
                     }`}
                   >
                     <div
                       className={`w-4 h-4 rounded-full bg-white transform ${
-                        toggleState[window.windowsid]
+                        toggleState[window.windowsId]
                           ? "translate-x-5"
                           : "translate-x-0"
                       } transition-transform`}
