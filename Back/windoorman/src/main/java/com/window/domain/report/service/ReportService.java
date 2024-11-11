@@ -38,13 +38,7 @@ public class ReportService {
     private final WindowActionRepository windowActionRepository;
     private final WindowsRepository windowsRepository;
 
-    public ReportResponseDto findAirReport(Long placeId, LocalDate reportDate, Authentication authentication) {
-        Member member = MemberInfo.getMemberInfo(authentication);
-        log.info("member: {}", member);
-
-        Place place = placeRepository.findByIdAndMember(placeId, member)
-                .orElseThrow(()-> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
-
+    public ReportResponseDto findAirReport(Long placeId, LocalDate reportDate) {
         Report report = reportRepository.findByPlaceIdAndReportDate(placeId, reportDate)
                 .orElseThrow(()-> new ExceptionResponse(CustomException.NOT_FOUND_REPORT_EXCEPTION));
 
@@ -62,15 +56,13 @@ public class ReportService {
         List<ActionsReportResponseDto> actionsReport = findWindowActions(windowId, reportDate);
 
         return ReportResponseDto.builder()
-                .placeName(place.getName())
                 .airReport(airReport)
                 .windows(windowsDto)
                 .actionsReport(actionsReport)
                 .build();
     }
 
-    public List<ActionsReportResponseDto> findActionsReport(Long windowId, LocalDate reportDate, Authentication authentication) {
-        Member member = MemberInfo.getMemberInfo(authentication);
+    public List<ActionsReportResponseDto> findActionsReport(Long windowId, LocalDate reportDate) {
         return findWindowActions(windowId, reportDate);
     }
 

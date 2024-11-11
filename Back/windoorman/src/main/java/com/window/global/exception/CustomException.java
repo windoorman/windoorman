@@ -14,6 +14,7 @@ public enum CustomException {
     NOT_FOUND_SCHEDULE_EXCEPTION(400, "NotFoundScheduleException", "스케줄이 존재하지 않습니다."),
     NOT_FOUND_SCHEDULEGROUP_EXCEPTION(400, "NotFoundScheduleGroupException", "스케줄 그룹이 존재하지 않습니다."),
     NOT_FOUND_REPORT_EXCEPTION(400, "NotFoundReportException", "리포트가 존재하지 않습니다"),
+    NOT_FOUND_COUNT_ACTION_EXCEPTION(400, "NotFoundCountActionException", "창문 개폐 횟수를 조회할 수 없습니다."),
     EXPIRED_JWT_EXCEPTION(401, "ExpiredJwtException", "토큰이 만료됐습니다."),
     NOT_VALID_JWT_EXCEPTION(401, "NotValidJwtException", "유효하지 않는 토큰입니다."),
     NOT_FOUND_REFRESH_EXCEPTION(400, "NotFoundRefreshException", "리프레시 토큰이 존재하지 않습니다."),
