@@ -49,10 +49,8 @@ public class SecurityConfig {
         http.httpBasic((httpBasic) -> httpBasic.disable());
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/members/reissue").permitAll()
-                .requestMatchers("/places/**").hasRole("USER")
-                .requestMatchers("/schedules/**").hasRole("USER")
-                .requestMatchers("/windows/**").hasRole("USER")
-                .requestMatchers("/reports/**").hasRole("USER")
+                .requestMatchers("/places/**", "/schedules/**", "/windows/**", "/reports/**").hasRole("USER")
+                .requestMatchers("/actions/avg/**").hasRole("USER")
                 .requestMatchers("/actions/**").hasAuthority("WHITELIST")
                 .anyRequest().authenticated());
 
