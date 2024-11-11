@@ -35,14 +35,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         // 라즈베리파이 whitelist 인증
         String macAddr = request.getHeader("mac");
         log.info("macAddr: {}", macAddr);
-        if(macAddr != null){
-            if(whitelistRepository.existsByMacAddress(macAddr)){
+        if(macAddr != null && whitelistRepository.existsByMacAddress(macAddr)){
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken("macAddr", null, AuthorityUtils.createAuthorityList("ROLE_WHITELIST"));
+                        new UsernamePasswordAuthenticationToken("macAddr", null, AuthorityUtils.createAuthorityList("WHITELIST"));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 filterChain.doFilter(request, response);
                 return;
-            }
         }
 
         String accessToken = getAccessToken(request);

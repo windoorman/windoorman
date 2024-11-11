@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/schedules/**").hasRole("USER")
                 .requestMatchers("/windows/**").hasRole("USER")
                 .requestMatchers("/reports/**").hasRole("USER")
-                .requestMatchers("/action/**").hasAuthority("ROLE_WHITELIST")
+                .requestMatchers("/actions/**").hasAuthority("WHITELIST")
                 .anyRequest().authenticated());
 
         http.oauth2Login((oauth) ->

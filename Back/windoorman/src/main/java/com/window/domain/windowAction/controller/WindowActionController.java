@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/action")
+@RequestMapping("/actions")
 public class WindowActionController {
 
     private final WindowActionService windowActionService;
