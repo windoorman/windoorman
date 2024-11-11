@@ -18,6 +18,7 @@ const ScheduleItem = ({
   initialEnabled,
 }: ScheduleItemProps) => {
   const [isEnabled, setIsEnabled] = useState(initialEnabled);
+  console.log("endTime", endTime);
 
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
