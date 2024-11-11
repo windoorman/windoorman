@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/places/**").hasRole("USER")
                 .requestMatchers("/schedules/**").hasRole("USER")
                 .requestMatchers("/windows/**").hasRole("USER")
+                .requestMatchers("/reports/**").hasRole("USER")
                 .anyRequest().authenticated());
 
         http.oauth2Login((oauth) ->

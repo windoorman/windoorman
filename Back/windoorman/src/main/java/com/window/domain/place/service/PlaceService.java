@@ -2,6 +2,7 @@ package com.window.domain.place.service;
 
 import com.window.domain.member.entity.Member;
 import com.window.domain.member.repository.MemberRepository;
+import com.window.domain.place.dto.GetPlacesResponseDto;
 import com.window.domain.place.dto.PlaceDto;
 import com.window.domain.place.entity.Place;
 import com.window.domain.place.repository.PlaceRepository;
@@ -21,7 +22,7 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
     private final MemberRepository memberRepository;
-    public List<PlaceDto> getPlaces(Authentication authentication) {
+    public GetPlacesResponseDto getPlaces(Authentication authentication) {
         Member member = MemberInfo.getMemberInfo(authentication);
         List<Place> places = placeRepository.findAllByMemberId(member.getId()).orElseThrow(() ->new ExceptionResponse(CustomException.NOT_FOUND_MEMBER_EXCEPTION));
 
@@ -31,7 +32,7 @@ public class PlaceService {
             placeDtos.add(new PlaceDto(place.getId(), place.getName(), place.getAddress(), place.getDetailAddress(), place.getIsDefault()));
         }
 
-        return placeDtos;
+        return new GetPlacesResponseDto(member.getNickname(), placeDtos);
     }
 
     public Long registPlace(PlaceDto placeDto, Authentication authentication) {

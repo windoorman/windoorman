@@ -8,7 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorDataDto {
-    private double humidity;
-    private double airCondition;
-    private double temperature;
+    private Long windowId;
+    private Double co2;
+    private Double voc;
+    private Double pm25;
+    private Double pm10;
+    private Double humidity;
+    private Double temperature;
 }

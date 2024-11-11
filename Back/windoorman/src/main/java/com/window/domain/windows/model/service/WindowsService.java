@@ -17,6 +17,8 @@ import com.window.global.exception.CustomException;
 import com.window.global.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -29,10 +31,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class WindowsService {
 
+
+
+    private final RedisTemplate<String, Object> redisTemplate;
     private final WindowsRepository windowsRepository;
     private final PlaceRepository placeRepository;
     private final WebClient webClient;
@@ -40,6 +45,7 @@ public class WindowsService {
 
     @Value("${smartthings.secret}")
     private String smartThingsSecret;
+
 
     public Map<String, Object> getWindows(Long placeId) {
         Place place = placeRepository.findById(placeId).
@@ -88,8 +94,18 @@ public class WindowsService {
         Windows window = windowsRepository.findById(windowsId)
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
 
-        // 실제로 센서에서 데이터 가져오면 그 데이터를 넣기
-        SensorDataDto sensorDataDto = new SensorDataDto(25.0, 30.0, 22.8);
+        // 레디스에서 불러온 마지막 센서 데이터 응답
+        String redisKey = "lastSensorData:" + windowsId;
+        Object cachedResult = redisTemplate.opsForValue().get(redisKey);
+
+
+        SensorDataDto sensorDataDto;
+
+        if (cachedResult instanceof SensorDataDto) {
+            sensorDataDto = (SensorDataDto) cachedResult;
+        } else {
+            sensorDataDto = new SensorDataDto(null, null, null, null, null, null, null);
+        }
 
         return WindowsDetailResponseDto.builder()
                 .placeName(window.getPlace().getName())

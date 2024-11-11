@@ -1,5 +1,6 @@
 package com.window.domain.place.controller;
 
+import com.window.domain.place.dto.GetPlacesResponseDto;
 import com.window.domain.place.dto.PlaceDto;
 import com.window.domain.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ public class PlaceController {
 
     @GetMapping
     public ResponseEntity<?> getPlaces(Authentication authentication) {
-        List<PlaceDto> places = placeService.getPlaces(authentication);
-        return ResponseEntity.ok(places);
+        GetPlacesResponseDto responseDto = placeService.getPlaces(authentication);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping

@@ -40,7 +40,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         refreshTokenRepository.saveRefreshToken(member.getId(), refreshToken);
 
         String redirectUrl = UriComponentsBuilder.
-                fromUriString("https://k11b107a.p.ssafy.io/token")
+                fromUriString("https://k11b107.p.ssafy.io/token")
                 .queryParam("access", accessToken)
                 .build()
                 .toString();
