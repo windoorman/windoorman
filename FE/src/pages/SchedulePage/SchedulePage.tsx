@@ -1,5 +1,7 @@
 import ScheduleList from "../../components/schedule/ScheduleList";
 import { useNavigate } from "react-router-dom";
+import useScheduleStore from "../../stores/useScheduleStore";
+import { useEffect } from "react";
 
 const schedulePage = () => {
   const navigate = useNavigate();
@@ -7,6 +9,11 @@ const schedulePage = () => {
     // 일정 등록 페이지로 이동
     navigate("/schedule/select");
   };
+
+  useEffect(() => {
+    // 일정 목록 가져오기
+    useScheduleStore.getState().fetchSchedules();
+  }, []);
   return (
     <div>
       <div className="mt-2 p-8">
