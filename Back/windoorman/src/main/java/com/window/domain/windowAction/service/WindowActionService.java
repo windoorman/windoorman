@@ -39,7 +39,7 @@ public class WindowActionService {
 
     public AvgActionResponseDto findCountAction(Long placeId) {
         CountActionDto countActions = windowActionRepository.findByCountAction(placeId)
-                .orElseThrow();
+                .orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_COUNT_ACTION_EXCEPTION));
         return AvgActionResponseDto.builder()
                 .avgActions((double) countActions.getOpenCount()/countActions.getWindowsCount())
                 .build();
