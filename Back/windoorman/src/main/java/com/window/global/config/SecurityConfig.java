@@ -1,5 +1,6 @@
 package com.window.global.config;
 
+import com.window.domain.whitelist.repository.WhitelistRepository;
 import com.window.global.security.handler.CustomExceptionHandler;
 import com.window.global.security.jwt.JwtAuthorizationFilter;
 import com.window.global.security.jwt.JwtTokenProvider;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailHandler oAuth2FailHandler;
     private final CustomExceptionHandler customExceptionHandler;
+    private final WhitelistRepository whitelistRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -36,7 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter(){
-        return new JwtAuthorizationFilter(jwtTokenProvider);
+        return new JwtAuthorizationFilter(jwtTokenProvider, whitelistRepository);
     }
 
     @Bean
@@ -51,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/schedules/**").hasRole("USER")
                 .requestMatchers("/windows/**").hasRole("USER")
                 .requestMatchers("/reports/**").hasRole("USER")
+                .requestMatchers("/actions/**").hasAuthority("WHITELIST")
                 .anyRequest().authenticated());
 
         http.oauth2Login((oauth) ->
