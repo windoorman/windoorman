@@ -2,12 +2,21 @@ import torch
 import time
 from detect_anomalies import detect_anomaly
 from autoencoder_model import Autoencoder
-from utils import sensor_thresholds, generate_bitmask, rapid_change_threshold, interpret_bitmask
+from utils import sensor_thresholds, generate_bitmask, rapid_change_threshold, interpret_bitmask, standardized_thresholds
 import os
 
-# 모델 경로 설정 및 로드
-current_dir = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(current_dir, "..", "models", "trained_autoencoder_korea.pth")
+DATA_PREPROCESSING_TYPE = "standard"
+if DATA_PREPROCESSING_TYPE == "standard":
+    THRESHOLD = standardized_thresholds
+    # 모델 경로 설정 및 로드
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(current_dir, "..", "models", "further_improved_trained_autoencoder_korea.pth")
+else:
+    THRESHOLD = sensor_thresholds
+    # 모델 경로 설정 및 로드
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(current_dir, "..", "models", "trained_autoencoder_korea.pth")
+
 
 # 모델 로드 및 FP16 변환
 model = Autoencoder()
@@ -22,6 +31,7 @@ indoor_origin_cause = False
 previous_data = {"indoor": None, "outdoor": None}
 previous_time = time.time()
 
+
 # def generate_bitmask(sensor_values, anomalies, thresholds):
 #     bitmask = 0b0
 #     for i, (sensor, value) in enumerate(sensor_values.items()):
@@ -33,6 +43,32 @@ previous_time = time.time()
 #             bitmask |= 0b11 << bit_position
 #             print(f"[DEBUG] {sensor} anomaly detected, setting bitmask to 0b11")
 #     return bitmask
+# 학습 데이터에서 미리 계산한 평균 및 표준편차
+sensor_means = {
+    "temperature": 20,
+    "humidity": 50,
+    "pm10": 60,
+    "pm25": 35,
+    "voc": 100,
+    "eco2": 600,
+}
+
+sensor_stds = {
+    "temperature": 5,
+    "humidity": 10,
+    "pm10": 20,
+    "pm25": 10,
+    "voc": 50,
+    "eco2": 100,
+}
+
+def standardize_real_time_data(data, means, stds):
+    """실시간 데이터를 학습 시 사용한 평균 및 표준편차로 표준화"""
+    standardized_data = {}
+    for sensor, value in data.items():
+        standardized_data[sensor] = (value - means[sensor]) / stds[sensor]
+    return standardized_data
+
 
 def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_data):
     global window_open, hold_mask_indoor, hold_mask_outdoor, indoor_origin_cause, previous_data, previous_time
@@ -127,15 +163,19 @@ def check_and_actuate_window(indoor_data, outdoor_data):
     for sensor, value in outdoor_data.items():
         print(f"  {sensor}: {value:.2f}")
 
+    if DATA_PREPROCESSING_TYPE == "standard":
+        indoor_data = standardize_real_time_data(indoor_data, sensor_means, sensor_stds)
+        outdoor_data = standardize_real_time_data(outdoor_data, sensor_means, sensor_stds)
+
     # 입력 데이터도 float16으로 변환
     indoor_data_fp16 = {k: torch.tensor(v, dtype=torch.float16) for k, v in indoor_data.items()}
     outdoor_data_fp16 = {k: torch.tensor(v, dtype=torch.float16) for k, v in outdoor_data.items()}
 
-    indoor_anomalies = detect_anomaly(indoor_data_fp16, model, sensor_thresholds)
-    outdoor_anomalies = detect_anomaly(outdoor_data_fp16, model, sensor_thresholds)
+    indoor_anomalies = detect_anomaly(indoor_data_fp16, model, THRESHOLD)
+    outdoor_anomalies = detect_anomaly(outdoor_data_fp16, model, THRESHOLD)
 
-    indoor_anomaly_mask = generate_bitmask(indoor_data, indoor_anomalies, sensor_thresholds)
-    outdoor_anomaly_mask = generate_bitmask(outdoor_data, outdoor_anomalies, sensor_thresholds)
+    indoor_anomaly_mask = generate_bitmask(indoor_data, indoor_anomalies, THRESHOLD)
+    outdoor_anomaly_mask = generate_bitmask(outdoor_data, outdoor_anomalies, THRESHOLD)
 
     window_status, action, influencing_sensors = determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, {"indoor": indoor_data, "outdoor": outdoor_data})
     print("\n창문 상태:", action)
