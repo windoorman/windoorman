@@ -12,6 +12,17 @@ sensor_thresholds = {
     "eco2": 1000
 }
 
+
+# 표준화된 임계치 예제 (각 센서별 평균과 표준편차 기반)
+standardized_thresholds = {
+    "temperature": (30 - 20) / 5,  # 각 센서에 맞게 설정
+    "humidity": (70 - 50) / 10,
+    "pm10": (100 - 60) / 20,
+    "pm25": (50 - 35) / 10,
+    "voc": (200 - 100) / 50,
+    "eco2": (1000 - 600) / 100,
+}
+
 # 급격한 변화 속도 임계값 설정
 rapid_change_threshold = {
     "temperature": 5,    # 예: 5°C 이상의 급격한 변화 시 감지

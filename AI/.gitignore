@@ -1,3 +1,4 @@
 autoencoder/configs/*
+autoencoder/__pycache__/
 
 !autoencoder/configs/.gitkeep
