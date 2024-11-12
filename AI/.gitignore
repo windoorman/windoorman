@@ -1,4 +1,3 @@
-config/
-autoencoder/config/
+autoencoder/configs/*
 
-!autoencoder/config/.gitkeep
+!autoencoder/configs/.gitkeep
