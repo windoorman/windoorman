@@ -20,6 +20,7 @@ import ReportPage from "./components/info/ReportPage";
 import MonitoringMain from "./components/monitoring/MonitoringMain";
 import SelectWindow from "./components/schedule/SelectWindow";
 import ScheduleRegist from "./components/schedule/ScheduleRegist";
+import ScheduleUpdate from "./components/schedule/ScheduleUpdate";
 
 function App() {
   const location = useLocation();
@@ -112,6 +113,15 @@ function App() {
           element={
             <ProtectedRoute>
               <ScheduleRegist />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/schedule/update"
+          element={
+            <ProtectedRoute>
+              <ScheduleUpdate />
             </ProtectedRoute>
           }
         />

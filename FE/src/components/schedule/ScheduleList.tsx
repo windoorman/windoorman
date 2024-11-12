@@ -16,6 +16,7 @@ const ScheduleList = () => {
             days={schedule.days}
             initialEnabled={schedule.activate}
             groupId={schedule.groupId}
+            windowsId={schedule.windowsId}
           />
         ))}
       </div>

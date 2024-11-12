@@ -4,6 +4,7 @@ import axiosApi from "../instance/axiosApi";
 export interface Schedule {
   scheduleId: number;
   groupId: number;
+  windowsId: number;
   placeName: string;
   windowName: string;
   startTime: string;
@@ -21,6 +22,14 @@ interface ScheduleState {
     days: string[]
   ) => Promise<void>;
   fetchSchedules: () => Promise<void>;
+  updateSchedule: (
+    groupId: number,
+    windowsId: number,
+    startTime: string,
+    endTime: string,
+    days: string[]
+  ) => Promise<void>;
+  deleteSchedule: (groupId: number) => Promise<void>;
   isActive: (groupId: number, activate: boolean) => Promise<void>;
 }
 
@@ -48,11 +57,31 @@ const useScheduleStore = create<ScheduleState>((set) => ({
       console.error("Failed to fetch schedules:", error);
     }
   },
-  isActive: async (groupId, activate) => {
+  isActive: async (groupId, isActivate) => {
     try {
-      await axiosApi.patch(`/schedules/toggle`, { groupId, activate });
+      await axiosApi.patch(`/schedules/toggle`, { groupId, isActivate });
     } catch (error) {
       console.error("Failed to change schedule activation:", error);
+    }
+  },
+  updateSchedule: async (groupId, windowsId, startTime, endTime, days) => {
+    try {
+      await axiosApi.patch(`/schedules`, {
+        groupId,
+        windowsId,
+        startTime,
+        endTime,
+        days,
+      });
+    } catch (error) {
+      console.error("Failed to update schedule:", error);
+    }
+  },
+  deleteSchedule: async (groupId) => {
+    try {
+      await axiosApi.delete(`/schedules`, { data: { groupId } });
+    } catch (error) {
+      console.error("Failed to delete schedule:", error);
     }
   },
 }));

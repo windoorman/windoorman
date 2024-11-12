@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useScheduleStore from "../../stores/useScheduleStore"; // zustand store import
 
 type ScheduleItemProps = {
@@ -9,6 +10,19 @@ type ScheduleItemProps = {
   days: string[];
   initialEnabled: boolean;
   groupId: number;
+  windowsId: number;
+};
+
+// 시간 형식 변환 함수 (오전/오후 구분)
+const formatTime = (time: string) => {
+  const [hour, minute] = time.split(":").map(Number);
+  const period = hour < 12 ? "오전" : "오후";
+  const formattedHour = hour % 12 || 12; // 0을 12로 변경
+  const formattedMinute = String(minute).padStart(2, "0"); // 분을 두 자리로 포맷
+  return `${period} ${String(formattedHour).padStart(
+    2,
+    "0"
+  )}:${formattedMinute}`;
 };
 
 const ScheduleItem = ({
@@ -19,10 +33,16 @@ const ScheduleItem = ({
   days,
   initialEnabled,
   groupId,
+  windowsId,
 }: ScheduleItemProps) => {
   const [isEnabled, setIsEnabled] = useState(initialEnabled);
-  const [showActions, setShowActions] = useState(false); // 상태 추가
+  const [showActions, setShowActions] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const isActive = useScheduleStore((state) => state.isActive);
+  const deleteSchedule = useScheduleStore((state) => state.deleteSchedule);
+  const navigate = useNavigate();
 
   const toggleSwitch = async () => {
     try {
@@ -35,15 +55,32 @@ const ScheduleItem = ({
   };
 
   const handleItemClick = () => {
-    setShowActions((prev) => !prev); // 클릭 시 showActions 토글
+    setShowActions((prev) => !prev);
   };
 
   const handleEdit = () => {
-    console.log("Edit schedule", groupId);
+    navigate(`/schedule/update`, {
+      state: {
+        groupId,
+        windowsId,
+        startTime,
+        endTime,
+        days,
+      },
+    });
   };
 
-  const handleDelete = () => {
-    console.log("Delete schedule", groupId);
+  const handleDelete = async () => {
+    try {
+      await deleteSchedule(groupId);
+      setModalMessage("일정이 성공적으로 삭제되었습니다.");
+      setShowDeleteModal(false);
+      setShowCompleteModal(true);
+    } catch (error) {
+      console.error("Failed to delete schedule:", error);
+      setModalMessage("일정 삭제에 실패했습니다. 다시 시도해 주세요.");
+      setShowCompleteModal(true);
+    }
   };
 
   return (
@@ -55,16 +92,16 @@ const ScheduleItem = ({
         <div>
           <div className="flex text-[#3C4973]">
             <div className="font-bold">{location} •&nbsp;</div>
-            <div className="font-semibold">{room}</div>
+            <div className="font-medium">{room}</div>
           </div>
           <div className="flex items-center">
-            <div className="font-bold text-lg">{startTime}</div>
+            <div className="font-bold text-lg">{formatTime(startTime)}</div>
           </div>
           <div className="flex text-[#B0B0B0]">{days.join(" ")}</div>
         </div>
         <div
           onClick={(e) => {
-            e.stopPropagation(); // prevent toggle action panel when toggling switch
+            e.stopPropagation();
             toggleSwitch();
           }}
           className={`relative w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer ${
@@ -89,11 +126,51 @@ const ScheduleItem = ({
             수정
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteModal(true)}
             className="text-[#E65B5B] border border-[#E65B5B] rounded px-2 py-1 text-xs font-semibold shadow-none"
           >
             삭제
           </button>
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p className="text-lg font-semibold text-[#3C4973] mb-4">
+              정말 삭제하시겠습니까?
+            </p>
+            <button
+              onClick={handleDelete}
+              className="bg-[#E65B5B] text-white px-4 py-2 rounded-lg font-semibold mr-4"
+            >
+              확인
+            </button>
+            <button
+              onClick={() => setShowDeleteModal(false)}
+              className="bg-gray-300 text-[#3C4973] px-4 py-2 rounded-lg font-semibold"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 삭제 완료 모달 */}
+      {showCompleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p className="text-lg font-semibold text-[#3C4973] mb-4">
+              {modalMessage}
+            </p>
+            <button
+              onClick={() => setShowCompleteModal(false)}
+              className="bg-[#3752A6] text-white px-4 py-2 rounded-lg font-semibold"
+            >
+              닫기
+            </button>
+          </div>
         </div>
       )}
     </div>
