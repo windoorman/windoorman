@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reports")
@@ -34,5 +35,12 @@ public class ReportController {
     public ResponseEntity<?> findActionReport(@PathVariable Long windowId,@PathVariable LocalDate reportDate) {
         List<ActionsReportResponseDto> responses = reportService.findActionsReport(windowId, reportDate);
         return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/graphs/{actionId}")
+    public ResponseEntity<?> getGraphData(@PathVariable("actionId") Long actionId) {
+        Map<String, Object> data = reportService.getLogs(actionId);
+
+        return ResponseEntity.ok(data);
     }
 }
