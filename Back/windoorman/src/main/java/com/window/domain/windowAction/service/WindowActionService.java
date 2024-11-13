@@ -1,7 +1,6 @@
 package com.window.domain.windowAction.service;
 
 import com.window.domain.windowAction.dto.response.AvgActionResponseDto;
-import com.window.domain.windowAction.dto.CountActionDto;
 import com.window.domain.windowAction.dto.request.WindowActionRequestDto;
 import com.window.domain.windowAction.entity.WindowAction;
 import com.window.domain.windowAction.repository.WindowActionRepository;
@@ -10,14 +9,19 @@ import com.window.domain.windows.model.repository.WindowsRepository;
 import com.window.global.exception.CustomException;
 import com.window.global.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WindowActionService {
 
+    private static final Logger log = LoggerFactory.getLogger(WindowActionService.class);
     private final WindowActionRepository windowActionRepository;
     private final WindowsRepository windowsRepository;
 
@@ -38,10 +42,14 @@ public class WindowActionService {
     }
 
     public AvgActionResponseDto findCountAction(Long placeId) {
-        CountActionDto countActions = windowActionRepository.findByCountAction(placeId)
-                .orElseThrow(()->new ExceptionResponse(CustomException.NOT_FOUND_COUNT_ACTION_EXCEPTION));
+        LocalDateTime endOfDay = LocalDateTime.now();
+        LocalDateTime startOfDay = endOfDay.minusDays(7);
+
+        Long openCount = windowActionRepository.countByCountAction(placeId, startOfDay, endOfDay);
+        Long windowsCount = windowsRepository.countByPlace_Id(placeId);
+        log.info("countActions : openCount {} windowsCount {}", openCount, windowsCount);
         return AvgActionResponseDto.builder()
-                .avgActions((double) countActions.getOpenCount()/countActions.getWindowsCount())
+                .avgActions((double) openCount/windowsCount)
                 .build();
     }
 }
