@@ -198,8 +198,8 @@ public class MonitoringService {
         LocalDateTime startDate = endDate.minusHours(24);
 
         // 오늘과 어제 날짜의 인덱스를 생성
-        String todayIndex = endDate.format(formatter);
-        String yesterdayIndex = startDate.format(formatter);
+        String todayIndex = windowId+"-*-"+endDate.format(formatter);
+        String yesterdayIndex = windowId+"-*-"+startDate.format(formatter);
 
 
         String fieldName = CATEGORY_TO_FIELD_LIST.get(category);
