@@ -79,7 +79,13 @@ const useScheduleStore = create<ScheduleState>((set) => ({
   },
   deleteSchedule: async (groupId) => {
     try {
-      await axiosApi.delete(`/schedules`, { data: { groupId } });
+      await axiosApi.delete(`/schedules/${groupId}`);
+      // 스케줄 배열에서 그룹 아이디를 이용해 삭제
+      set((state) => ({
+        schedules: state.schedules.filter(
+          (schedule) => schedule.groupId !== groupId
+        ),
+      }));
     } catch (error) {
       console.error("Failed to delete schedule:", error);
     }
