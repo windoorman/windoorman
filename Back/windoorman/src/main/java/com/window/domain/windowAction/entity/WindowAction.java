@@ -1,8 +1,9 @@
-package com.window.domain.windowAction;
+package com.window.domain.windowAction.entity;
 
 
 import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -11,6 +12,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 public class WindowAction {
+
+    @Builder
+    public WindowAction(Windows windows, Open open, LocalDateTime openTime, String reason) {
+        this.windows = windows;
+        this.open = open;
+        this.openTime = openTime;
+        this.reason = reason;
+    }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,5 +35,8 @@ public class WindowAction {
     @Column(name = "open_time", nullable = false, updatable = false)
     @CreatedDate
     private LocalDateTime openTime;
+
+    @Column(name = "reason", nullable = false, length = 300)
+    private String reason;
 
 }

@@ -48,9 +48,9 @@ public class ScheduleController {
         return ResponseEntity.status(200).body("활성화 수정");
     }
 
-    @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<?> deleteSchedule(@PathVariable("scheduleId") Long scheduleId) {
-        scheduleService.deleteSchedule(scheduleId);
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<?> deleteSchedule(@PathVariable("groupId") Long groupId) {
+        scheduleService.deleteSchedule(groupId);
 
         return ResponseEntity.status(200).body("스케줄 삭제");
     }

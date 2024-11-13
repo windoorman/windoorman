@@ -20,7 +20,7 @@ public class OAuth2FailHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String redirectUri = UriComponentsBuilder.
-                fromUriString("https://k11b107a.p.ssafy.io/login")
+                fromUriString("https://k11b107.p.ssafy.io/login")
                 .build()
                 .toUriString();
 
