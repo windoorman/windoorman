@@ -17,6 +17,9 @@ export interface DeviceItem {
 interface WindowState {
   windows: WindowItem[];
   devices: DeviceItem[];
+  buttonState: {
+    [id: number]: { disabled: boolean; remainingTime: number | null };
+  };
   fetchWindows: (homeId: number) => Promise<void>;
   fetchDevices: () => Promise<DeviceItem[]>;
   RegistDevice: (
@@ -24,11 +27,19 @@ interface WindowState {
     homeId: number,
     homeName: string
   ) => Promise<void>;
+  toggleWindowState: (
+    windowId: number,
+    newState: "open" | "close"
+  ) => Promise<void>;
+  startTimer: (windowId: number) => void;
+  detailWindow: (windowId: number) => void;
+  autoWindow: (windowId: number, isAuto: boolean) => void;
 }
 
 const useWindowStore = create<WindowState>((set) => ({
   windows: [],
   devices: [],
+  buttonState: {},
 
   fetchWindows: async (homeId: number) => {
     try {
@@ -36,7 +47,6 @@ const useWindowStore = create<WindowState>((set) => ({
         `/windows/${homeId}`
       );
       set({ windows: response.data.windows });
-      console.log("Fetched windows: ", response.data);
     } catch (error) {
       console.error("Failed to fetch windows: ", error);
     }
@@ -48,9 +58,10 @@ const useWindowStore = create<WindowState>((set) => ({
       return response.data;
     } catch (error) {
       console.error("Failed to fetch devices: ", error);
-      return []; // 오류 발생 시 빈 배열 반환
+      return [];
     }
   },
+
   RegistDevice: async (device: DeviceItem, homeId: number) => {
     try {
       const body = {
@@ -62,6 +73,66 @@ const useWindowStore = create<WindowState>((set) => ({
       set((state) => ({ devices: [...state.devices, device] }));
     } catch (error) {
       console.error("Failed to register device: ", error);
+    }
+  },
+
+  toggleWindowState: async (windowId: number, newState: "open" | "close") => {
+    try {
+      await axiosApi.get(`/windows/${newState}/${windowId}`);
+      set((state) => ({
+        windows: state.windows.map((window) =>
+          window.windowsId === windowId
+            ? { ...window, state: newState }
+            : window
+        ),
+      }));
+    } catch (error) {
+      console.error("Failed to toggle window state:", error);
+    }
+  },
+
+  startTimer: (windowId: number) => {
+    set((state) => ({
+      buttonState: {
+        ...state.buttonState,
+        [windowId]: { disabled: true, remainingTime: 30 },
+      },
+    }));
+
+    const intervalId = setInterval(() => {
+      set((state) => {
+        const remainingTime =
+          (state.buttonState[windowId].remainingTime || 1) - 1;
+        if (remainingTime <= 0) {
+          clearInterval(intervalId);
+          return {
+            buttonState: {
+              ...state.buttonState,
+              [windowId]: { disabled: false, remainingTime: null },
+            },
+          };
+        }
+        return {
+          buttonState: {
+            ...state.buttonState,
+            [windowId]: { disabled: true, remainingTime },
+          },
+        };
+      });
+    }, 1000);
+  },
+  detailWindow: async (windowsId: number) => {
+    try {
+      await axiosApi.get(`/windows/detail/${windowsId}`);
+    } catch (error) {
+      console.error("Failed to fetch detail window: ", error);
+    }
+  },
+  autoWindow: async (windowsId: number, isAuto: boolean) => {
+    try {
+      await axiosApi.patch(`/windows/toggle`, { windowsId, isAuto });
+    } catch (error) {
+      console.error("Failed to fetch auto window: ", error);
     }
   },
 }));

@@ -1,7 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
 const ProgressGraph = () => {
-  const sensorOptions = ["공기질", "CO2", "습도", "온도"];
+  const sensorOptions = [
+    "습도",
+    "기온",
+    "co2",
+    "공기질",
+    "미세먼지",
+    "초미세먼지",
+  ];
   const [selectedSensor, setSelectedSensor] = useState(sensorOptions[0]);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

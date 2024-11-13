@@ -23,18 +23,20 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
   const fetchWindows = useWindowStore((state) => state.fetchWindows);
   const windows = useWindowStore((state) => state.windows);
   const fetchDevices = useWindowStore((state) => state.fetchDevices);
+  const startTimer = useWindowStore((state) => state.startTimer);
+  const toggleWindowState = useWindowStore((state) => state.toggleWindowState);
+  const buttonState = useWindowStore((state) => state.buttonState);
   const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResult, setSearchResult] = useState<DeviceItem[] | null>(null);
 
   useEffect(() => {
     if (selectedHome.id) {
       fetchWindows(selectedHome.id);
     }
   }, [fetchWindows, selectedHome.id]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchResult, setSearchResult] = useState<DeviceItem[] | null>(null);
-  const [toggleState, setToggleState] = useState<{ [id: string]: boolean }>({});
 
   const onClickAddWindow = () => {
     setIsModalOpen(true);
@@ -55,15 +57,19 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
     }
   };
 
-  const handleToggle = (windowId: number) => {
-    setToggleState((prevState) => ({
-      ...prevState,
-      [windowId]: !prevState[windowId],
-    }));
+  const handleToggle = async (windowId: number) => {
+    const currentWindow = windows.find(
+      (window) => window.windowsId === windowId
+    );
+    if (currentWindow) {
+      const newState = currentWindow.state === "open" ? "close" : "open";
+      await toggleWindowState(windowId, newState);
+      startTimer(windowId); // 30초 동안 버튼 비활성화
+    }
   };
 
-  const navigateMonitoring = () => {
-    navigate("/monitoring");
+  const navigateMonitoring = (windowId: number, auto: boolean) => {
+    navigate("/monitoring", { state: { windowsId: windowId, isAuto: auto } });
   };
 
   const renderNoWindows = () => (
@@ -93,10 +99,7 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
   const renderWindows = () => (
     <div className="mt-8 pt-2 border-t-2 rounded-3xl">
       <div className="px-4 mb-2">
-        <div className="flex justify-between">
-          <h2 className="text-[#3C4973] text-2xl font-semibold">
-            {selectedHome.name}
-          </h2>
+        <div className="flex justify-end">
           <button
             onClick={onClickAddWindow}
             className="bg-[#3C4973] rounded-full w-8 h-8 flex justify-center items-center text-white"
@@ -113,7 +116,9 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
               >
                 <img
                   src={window.state === "open" ? openedWindow : closedWindow}
-                  onClick={navigateMonitoring}
+                  onClick={() =>
+                    navigateMonitoring(window.windowsId, window.auto)
+                  }
                   alt={`${window.name} 상태`}
                   className="w-16 h-16 mb-2"
                 />
@@ -121,24 +126,44 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
                   {window.name}
                 </span>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500">
-                    자동 {toggleState[window.windowsId] ? "ON" : "OFF"}
-                  </span>
                   <button
                     onClick={() => handleToggle(window.windowsId)}
-                    className={`w-10 h-5 rounded-full ${
-                      toggleState[window.windowsId]
-                        ? "bg-[#FFA500]"
-                        : "bg-gray-300"
+                    disabled={buttonState[window.windowsId]?.disabled}
+                    className={`w-20 h-8 rounded-full flex justify-center items-center ${
+                      buttonState[window.windowsId]?.disabled
+                        ? "bg-gray-300 cursor-not-allowed"
+                        : "bg-[#3C4973] text-white"
                     }`}
                   >
-                    <div
-                      className={`w-4 h-4 rounded-full bg-white transform ${
-                        toggleState[window.windowsId]
-                          ? "translate-x-5"
-                          : "translate-x-0"
-                      } transition-transform`}
-                    ></div>
+                    {buttonState[window.windowsId]?.disabled ? (
+                      <div className="flex items-center space-x-2">
+                        <svg
+                          className="animate-spin h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          ></path>
+                        </svg>
+                        <span className="text-white text-xs">
+                          {buttonState[window.windowsId].remainingTime}s
+                        </span>
+                      </div>
+                    ) : (
+                      <span>{window.state === "open" ? "닫기" : "열기"}</span>
+                    )}
                   </button>
                 </div>
               </li>

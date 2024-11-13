@@ -1,13 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // useLocation import
+import useWindowStore from "../../stores/useWindowStore";
+import useUserStore from "../../stores/useUserStore";
 import CurrentSensor from "./CurrentSensor";
 import ProgressGraph from "./ProgressGraph";
 
 const MonitoringMain = () => {
-  const [isOn, setIsOn] = useState(false);
+  const location = useLocation();
+  const windowsId = location.state?.windowsId; // windowsId 가져오기
+  const isAuto = location.state?.isAuto; // isAuto 가져오기
+  const [isOn, setIsOn] = useState(isAuto); // isAuto 상태 저장
+  const detailWindow = useWindowStore((state) => state.detailWindow);
+  const userName = useUserStore((state) => state.userName);
+  const autoWindow = useWindowStore((state) => state.autoWindow);
 
   const handleToggle = () => {
-    setIsOn((prevState) => !prevState);
+    setIsOn((prevState: any) => !prevState);
+    autoWindow(windowsId, !isOn);
   };
+
+  useEffect(() => {
+    if (windowsId) {
+      const response = detailWindow(windowsId);
+      console.log(response);
+    }
+  }, []);
 
   return (
     <div>
@@ -15,11 +32,11 @@ const MonitoringMain = () => {
         본가
       </div>
       <div className="text-lg text-[#3C4973] font-semibold flex justify-center items-center pb-4 border-b border-dashed border-b-2">
-        <div>찬호님의&nbsp;</div>
-        <div className="font-bold">창문 1&nbsp;</div>
+        <div>{userName}님의&nbsp;</div>
+        <div className="font-bold">창문 {windowsId}&nbsp;</div>{" "}
+        {/* windowsId 출력 */}
         <div>정보</div>
       </div>
-      {/* 토글 버튼을 중앙에 배치하기 위한 컨테이너 */}
       <div className="flex justify-center mt-4">
         <div
           onClick={handleToggle}
@@ -51,7 +68,7 @@ const MonitoringMain = () => {
         현재 센서 수치
       </div>
       <div className="px-4">
-        <CurrentSensor />
+        <CurrentSensor windowsId={windowsId} />
       </div>
       <div className="px-6">
         <ProgressGraph />

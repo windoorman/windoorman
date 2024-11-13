@@ -1,7 +1,32 @@
+import { useEffect } from "react";
 import good from "../../assets/monitoring/good.png";
 import sunny from "../../assets/monitoring/sunny.png";
 
-const CurrentSensor = () => {
+interface CurrentSensorProps {
+  windowsId: number;
+}
+
+const CurrentSensor = ({ windowsId }: CurrentSensorProps) => {
+  useEffect(() => {
+    const eventSource = new EventSource(
+      `http://localhost:8080/api/sensors/${windowsId}`
+    );
+
+    eventSource.addEventListener("sensor", (event) => {
+      console.log("sensor event received");
+      const data = JSON.parse(event.data);
+      console.log("Received data:", data);
+    });
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error:", error);
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [windowsId]);
+
   return (
     <div>
       <div className="flex justify-center">
