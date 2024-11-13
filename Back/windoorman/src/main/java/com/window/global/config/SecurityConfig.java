@@ -47,10 +47,15 @@ public class SecurityConfig {
         http.httpBasic((httpBasic) -> httpBasic.disable());
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/members/reissue").permitAll()
+                .requestMatchers("/sensors/**").permitAll()
                 .requestMatchers("/places/**").hasRole("USER")
                 .requestMatchers("/schedules/**").hasRole("USER")
                 .requestMatchers("/windows/**").hasRole("USER")
                 .anyRequest().authenticated());
+
+//        http.authorizeHttpRequests((requests) -> requests
+//                .requestMatchers("/**").permitAll());
+
 
         http.oauth2Login((oauth) ->
                 oauth.userInfoEndpoint(c -> c.userService(oAuth2Service))
