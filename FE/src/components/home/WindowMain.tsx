@@ -68,8 +68,14 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
     }
   };
 
-  const navigateMonitoring = (windowId: number, auto: boolean) => {
-    navigate("/monitoring", { state: { windowsId: windowId, isAuto: auto } });
+  const navigateMonitoring = (
+    windowId: number,
+    auto: boolean,
+    name: string
+  ) => {
+    navigate("/monitoring", {
+      state: { windowsId: windowId, isAuto: auto, windowName: name },
+    });
   };
 
   const renderNoWindows = () => (
@@ -117,7 +123,11 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
                 <img
                   src={window.state === "open" ? openedWindow : closedWindow}
                   onClick={() =>
-                    navigateMonitoring(window.windowsId, window.auto)
+                    navigateMonitoring(
+                      window.windowsId,
+                      window.auto,
+                      window.name
+                    )
                   }
                   alt={`${window.name} 상태`}
                   className="w-16 h-16 mb-2"

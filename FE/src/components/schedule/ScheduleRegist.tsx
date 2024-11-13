@@ -63,13 +63,18 @@ const ScheduleRegist = () => {
       return;
     }
 
+    // Sort selectedDays based on daysOfWeek order
+    const sortedDays = selectedDays.sort(
+      (a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b)
+    );
+
     try {
-      await RegistSchedule(windowsId, startTime, endTime, selectedDays);
+      await RegistSchedule(windowsId, startTime, endTime, sortedDays);
       setModalMessage("일정이 성공적으로 등록되었습니다.");
       setShowModal(true);
       setTimeout(() => {
         navigate("/schedule");
-      }, 1500); // 1.5초 후에 페이지 이동
+      }, 1500);
     } catch (error) {
       console.error("일정 등록 실패:", error);
       setModalMessage("일정 등록에 실패했습니다. 다시 시도해 주세요.");

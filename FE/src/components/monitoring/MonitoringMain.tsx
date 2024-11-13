@@ -9,6 +9,7 @@ const MonitoringMain = () => {
   const location = useLocation();
   const windowsId = location.state?.windowsId; // windowsId 가져오기
   const isAuto = location.state?.isAuto; // isAuto 가져오기
+  const windowName = location.state?.windowName; // windowName 가져오기
   const [isOn, setIsOn] = useState(isAuto); // isAuto 상태 저장
   const detailWindow = useWindowStore((state) => state.detailWindow);
   const userName = useUserStore((state) => state.userName);
@@ -33,7 +34,7 @@ const MonitoringMain = () => {
       </div>
       <div className="text-lg text-[#3C4973] font-semibold flex justify-center items-center pb-4 border-b border-dashed border-b-2">
         <div>{userName}님의&nbsp;</div>
-        <div className="font-bold">창문 {windowsId}&nbsp;</div>{" "}
+        <div className="font-bold">{windowName}&nbsp;</div>{" "}
         {/* windowsId 출력 */}
         <div>정보</div>
       </div>

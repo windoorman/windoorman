@@ -13,7 +13,10 @@ export interface DeviceItem {
   label: string;
   deviceId: string;
 }
-
+export interface SensorRecord {
+  timestamp: string;
+  value: number;
+}
 interface WindowState {
   windows: WindowItem[];
   devices: DeviceItem[];
@@ -34,6 +37,11 @@ interface WindowState {
   startTimer: (windowId: number) => void;
   detailWindow: (windowId: number) => void;
   autoWindow: (windowId: number, isAuto: boolean) => void;
+  fetchSensorRecords: (
+    windowId: number,
+    category: number,
+    range: number
+  ) => Promise<SensorRecord[]>;
 }
 
 const useWindowStore = create<WindowState>((set) => ({
@@ -133,6 +141,21 @@ const useWindowStore = create<WindowState>((set) => ({
       await axiosApi.patch(`/windows/toggle`, { windowsId, isAuto });
     } catch (error) {
       console.error("Failed to fetch auto window: ", error);
+    }
+  },
+  fetchSensorRecords: async (
+    windowId: number,
+    category: number,
+    range: number
+  ) => {
+    try {
+      const response = await axiosApi.get<SensorRecord[]>(
+        `/sensors/records/${windowId}/${category}/${range}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch sensor records:", error);
+      return [];
     }
   },
 }));

@@ -4,8 +4,8 @@ import useScheduleStore from "../../stores/useScheduleStore";
 const ScheduleList = () => {
   const scheduleList = useScheduleStore((state) => state.schedules);
   return (
-    <div>
-      <div className="mt-2 p-4">
+    <div className="">
+      <div className="mt-2 p-4 max-h-[33rem] overflow-y-auto">
         {scheduleList.map((schedule) => (
           <ScheduleItem
             key={schedule.scheduleId}

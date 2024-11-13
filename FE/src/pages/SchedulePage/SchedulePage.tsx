@@ -16,7 +16,7 @@ const schedulePage = () => {
   }, []);
   return (
     <div>
-      <div className="mt-2 p-8">
+      <div className="mt-2 p-8 pb-4">
         <span className="text-2xl text-[#3C4973] font-bold flex items-center space-x-1">
           일정
         </span>

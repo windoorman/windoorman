@@ -104,8 +104,8 @@ const ScheduleItem = ({
             e.stopPropagation();
             toggleSwitch();
           }}
-          className={`relative w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer ${
-            isEnabled ? "bg-yellow-400" : ""
+          className={`relative w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+            isEnabled ? "bg-[#3C4973]" : "bg-gray-300"
           }`}
         >
           <div

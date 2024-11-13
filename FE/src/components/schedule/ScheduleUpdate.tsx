@@ -68,14 +68,13 @@ const ScheduleUpdate = () => {
       return;
     }
 
+    // Sort selectedDays based on daysOfWeek order
+    const sortedDays = selectedDays.sort(
+      (a, b) => daysOfWeek.indexOf(a) - daysOfWeek.indexOf(b)
+    );
+
     try {
-      await updateSchedule(
-        groupId,
-        windowsId,
-        startTime,
-        endTime,
-        selectedDays
-      );
+      await updateSchedule(groupId, windowsId, startTime, endTime, sortedDays);
       setModalMessage("일정이 성공적으로 수정되었습니다.");
       setShowModal(true);
       setTimeout(() => navigate("/schedule"), 1500);
