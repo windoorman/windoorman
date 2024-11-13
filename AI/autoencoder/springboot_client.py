@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-def send_window_action_to_springboot(mac_address, open_status, issues, springboot_url):
+def send_window_action_to_springboot(mac_address, open_status, issues, springboot_url, window_id=2):
     """
     Spring Boot 서버에 창문 개폐 등록 요청을 전송합니다.
     :param mac_address: Raspberry Pi의 MAC 주소
@@ -10,15 +10,20 @@ def send_window_action_to_springboot(mac_address, open_status, issues, springboo
     :param springboot_url: Spring Boot 서버 URL
     """
     payload = {
-        "windowsId": mac_address,
+        "windowsId": window_id,
         "open": open_status,
         "openTime": datetime.now().isoformat(),
         "reason": issues
     }
+
+    headers = {
+        "Content-Type": "application/json",
+        "mac" : mac_address
+    }
     print(f"보냅니다!!!!!!!!!!!!!!!!!!!!!! {payload}")
     
     try:
-        response = requests.post(springboot_url, json=payload)
+        response = requests.post(springboot_url, json=payload, headers=headers)
         response.raise_for_status()
         print(f"[INFO] 창문 개폐 등록이 성공적으로 전송되었습니다: {response.json()}")
     except requests.exceptions.RequestException as e:
