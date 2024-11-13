@@ -49,10 +49,12 @@ public class SecurityConfig {
         http.httpBasic((httpBasic) -> httpBasic.disable());
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/members/reissue").permitAll()
+                .requestMatchers("/sensors/**").permitAll()
                 .requestMatchers("/places/**", "/schedules/**", "/windows/**", "/reports/**").hasRole("USER")
                 .requestMatchers("/actions/avg/**").hasRole("USER")
                 .requestMatchers("/actions/**").hasAuthority("WHITELIST")
                 .anyRequest().authenticated());
+
 
         http.oauth2Login((oauth) ->
                 oauth.userInfoEndpoint(c -> c.userService(oAuth2Service))

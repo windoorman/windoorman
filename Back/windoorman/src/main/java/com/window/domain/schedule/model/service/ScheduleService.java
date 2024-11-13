@@ -63,6 +63,7 @@ public class ScheduleService {
                 dto = ScheduleResponseDto.builder()
                         .scheduleId(schedule.getId())
                         .groupId(schedule.getScheduleGroup().getId())
+                        .windowsId(schedule.getWindows().getId())
                         .placeName(schedule.getWindows().getPlace().getName())
                         .windowName(schedule.getWindows().getName())
                         .startTime(schedule.getStartTime())

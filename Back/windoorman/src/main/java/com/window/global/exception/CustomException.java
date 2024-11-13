@@ -22,6 +22,7 @@ public enum CustomException {
     FAIL_SEND_SENSORS_EXCEPTION(400, "FailSendSensorsException", "센서 데이터 전송에 실패했습니다."),
     FAIL_CONNECT_SSE_EXCEPTION(400, "FailConnectSSEException", "SSE 연결에 실패했습니다."),
     ACCESS_DENIED_EXCEPTION(403,"AccessDeniedException","권한이 없습니다"),
+    NOT_EXISTS_DATA_EXCEPTION(400, "NotExistsDataException", "데이터가 존재하지 않습니다."),
     DUPLICATE_DEVICEID_EXCEPTION(409, "DuplicateDeviceIdException", "이미 등록된 디바이스입니다.");
 
     private Integer statusNum;

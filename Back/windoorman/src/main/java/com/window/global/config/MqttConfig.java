@@ -65,16 +65,12 @@ public class MqttConfig {
         return message -> {
             String payload = message.getPayload().toString();
             String topic = message.getHeaders().get("mqtt_receivedTopic").toString();
-            Long windowId = extractWindowIdFromTopic(topic);
+
             log.info("Received message: " + payload + " from topic: " + topic);
 
             // Process your message here, e.g., save to Redis or update in-memory cache
-            monitoringService.processSensorData(windowId, payload);
+            monitoringService.processSensorData(payload);
         };
     }
 
-    private Long extractWindowIdFromTopic(String topic) {
-        String[] parts = topic.split("/");
-        return Long.parseLong(parts[2]); // Assuming the topic format is sensor/window/{windowId}
-    }
 }
