@@ -1,4 +1,4 @@
-package com.window.domain.test;
+package com.window.domain.report.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Id;
@@ -13,14 +13,12 @@ import java.time.LocalDateTime;
 @Getter
 @Document(indexName = "#{T(java.time.LocalDate).now().toString()}", createIndex = false)
 @AllArgsConstructor
-public class Elastic {
+public class Graph {
 
     @Id
     private String id;
 
-    @Field(name = "windowId", type = FieldType.Long)
     private Long windowsId;
-    private Long memberId;
 
     private Double pm10;
     private Double pm25;
