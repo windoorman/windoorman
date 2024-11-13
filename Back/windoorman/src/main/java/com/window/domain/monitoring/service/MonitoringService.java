@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.Time;
 import co.elastic.clients.elasticsearch._types.aggregations.CalendarInterval;
 import co.elastic.clients.elasticsearch._types.aggregations.DateHistogramAggregate;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.json.JsonData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.window.domain.monitoring.dto.GraphDataResponse;
@@ -18,11 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -188,34 +187,45 @@ public class MonitoringService {
     }
 
     // get graph data (day)
-    private List<GraphDataResponse> getGraphDataDay(Long windowId, int category) {
+    private List<GraphDataResponse> getGraphDataDay(Long windowId, int category)  {
         List<GraphDataResponse> responses = new ArrayList<>();
 
-        LocalDate now = LocalDateTime.now(ZoneOffset.UTC).toLocalDate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-        String indexName = windowId+"-*-"+now.format(formatter);
+        // 24시간 전과 현재 시간을 구합니다.
+        LocalDateTime endDate = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime startDate = endDate.minusHours(24);
+
+        // 오늘과 어제 날짜의 인덱스를 생성
+        String todayIndex = endDate.format(formatter);
+        String yesterdayIndex = startDate.format(formatter);
+
+
         String fieldName = CATEGORY_TO_FIELD_LIST.get(category);
+
         try {
+            // Multi-index 검색으로 오늘과 어제 인덱스를 동시에 조회
             SearchResponse<Void> search = esClient.search(s -> s
-                            .index(indexName) // Replace with your actual index name
-                            .size(0) // Adjust size based on expected results; you can use pagination if necessary
+                            .index(todayIndex + "," + yesterdayIndex)
+                            .query(q -> q.range(r -> r
+                                    .field("@timestamp")
+                                    .gte(JsonData.of(startDate.format(timeFormatter))) // 24시간 전
+                                    .lte(JsonData.of(endDate.format(timeFormatter)))   // 현재
+                            ))
+                            .size(0)
                             .aggregations("hourly_avg", a -> a
                                     .dateHistogram(h -> h
                                             .field("@timestamp")
-                                            .fixedInterval(Time.of(t->t.time("1h"))) // Group by hour
+                                            .fixedInterval(Time.of(t -> t.time("1h")))
                                             .format("yyyy-MM-dd HH:mm:ss")
-                                    )           
-                                    .aggregations("avg_value", subAgg -> subAgg
-                                            .avg(avg -> avg.field(fieldName)) // Calculate average of humidity
                                     )
+                                    .aggregations("avg_value", subAgg -> subAgg.avg(avg -> avg.field(fieldName)))
                             ),
                     Void.class
             );
 
-            DateHistogramAggregate histogram = search.aggregations()
-                    .get("hourly_avg")
-                    .dateHistogram();
+            DateHistogramAggregate histogram = search.aggregations().get("hourly_avg").dateHistogram();
 
             for (var bucket : histogram.buckets().array()) {
                 String dateStr = bucket.keyAsString();
