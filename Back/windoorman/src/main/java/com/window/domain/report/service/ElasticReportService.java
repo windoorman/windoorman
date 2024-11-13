@@ -32,7 +32,7 @@ public class ElasticReportService {
 
     @Transactional
     public void saveDailyAirReport() throws IOException {
-        LocalDate localDate = LocalDate.now();
+        LocalDate localDate = LocalDate.now().minusDays(1);
         String date = localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
         String indexPattern = "*-" + date;
 
