@@ -26,11 +26,13 @@ public class MonitoringController {
 
     }
 
-    @GetMapping("/records/{windowId}/{category}")
-    public ResponseEntity<?> getGraphData(Authentication authentication,  @PathVariable("windowId") Long windowId, @PathVariable("category") int category) {
+    @GetMapping("/records/{windowId}/{category}/{range}")
+    public ResponseEntity<?> getGraphByRange( @PathVariable("windowId") Long windowId, @PathVariable("category") int category, @PathVariable("range") int range) {
 
-        List<GraphDataResponse> graphData = monitoringService.getGraphData(authentication, windowId, category);
+        List<GraphDataResponse> graphData = monitoringService.getGraphByRange(windowId, category, range);
         return ResponseEntity.ok(graphData);
     }
+
+
 
 }
