@@ -53,13 +53,13 @@ def interpret_bitmask(indoor_bitmask, outdoor_bitmask):
         
         # 실내 비트마스크 해석
         if indoor_sensor_bits == AnomalyStatus.THRESHOLD_EXCEEDED.value:
-            issues.append({"sensor": f"{sensor}_in", "status": "ecxess"})
+            issues.append({"sensor": f"{sensor}_in", "status": "excess"})
         elif indoor_sensor_bits == AnomalyStatus.ANOMALY_DETECTED.value:
             issues.append({"sensor": f"{sensor}_in", "status": "anomaly"})
         
         # 실외 비트마스크 해석
         if outdoor_sensor_bits == AnomalyStatus.THRESHOLD_EXCEEDED.value:
-            issues.append({"sensor": f"{sensor}_out", "status": "ecxess"})
+            issues.append({"sensor": f"{sensor}_out", "status": "excess"})
         elif outdoor_sensor_bits == AnomalyStatus.ANOMALY_DETECTED.value:
             issues.append({"sensor": f"{sensor}_out", "status": "anomaly"})
     
