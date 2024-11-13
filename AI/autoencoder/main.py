@@ -65,6 +65,7 @@ from elasticsearch_client import ElasticsearchClient
 from live_anomaly_detection import check_and_actuate_window
 from springboot_client import send_window_action_to_springboot
 from enums import WindowAction
+import os
 
 def main_loop(es_client, index_name, springboot_url, mac_address):
     previous_window_status = WindowAction.NO_ACTION
@@ -88,7 +89,10 @@ def main_loop(es_client, index_name, springboot_url, mac_address):
         time.sleep(5)
 
 if __name__ == "__main__":
-    config = load_config()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    config_dir = os.path.join(current_dir, "configs", "config.yaml")
+    
+    config = load_config(config_dir)
     es_client = ElasticsearchClient(config)
     index_name = config["elasticsearch"]["index_name"]
     springboot_url = config["springboot"]["url"]

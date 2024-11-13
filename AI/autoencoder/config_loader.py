@@ -1,6 +1,6 @@
 import yaml
 
-def load_config(path="config/config.yaml"):
+def load_config(path="configs/config.yaml"):
     """
     YAML 형식의 설정 파일을 로드합니다.
     :param path: 설정 파일 경로

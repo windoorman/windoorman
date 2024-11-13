@@ -2,11 +2,13 @@ import torch
 import time
 from detect_anomalies import detect_anomaly
 from autoencoder_model import Autoencoder
+from further_improved_train import ImprovedAutoencoder
+from diff_train import DifferenceAutoencoder
 from utils import sensor_thresholds, generate_bitmask, rapid_change_threshold, interpret_bitmask, standardized_thresholds
 import os
 from enums import WindowAction
 
-DATA_PREPROCESSING_TYPE = "standard"
+DATA_PREPROCESSING_TYPE = "difference"
 
 
 if DATA_PREPROCESSING_TYPE == "standard":
@@ -14,16 +16,23 @@ if DATA_PREPROCESSING_TYPE == "standard":
     # 모델 경로 설정 및 로드
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(current_dir, "..", "models", "further_improved_trained_autoencoder_korea.pth")
+    model = ImprovedAutoencoder()
+elif DATA_PREPROCESSING_TYPE == "difference":
+    THRESHOLD = sensor_thresholds
+    # 모델 경로 설정 및 로드
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(current_dir, "..", "models", "diff_trained_autoencoder_korea.pth")
+    model = DifferenceAutoencoder()
 else:
     THRESHOLD = sensor_thresholds
     # 모델 경로 설정 및 로드
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(current_dir, "..", "models", "trained_autoencoder_korea.pth")
-
+    model = Autoencoder()
 
 # 모델 로드 및 FP16 변환
-model = Autoencoder()
-model.load_state_dict(torch.load(model_path))
+# model = ImprovedAutoencoder()
+model.load_state_dict(torch.load(model_path, weights_only=True))
 model.eval()
 model = model.half()  # 모델을 float16으로 변환
 
@@ -74,6 +83,9 @@ def standardize_real_time_data(data, means, stds):
         standardized_data[sensor] = (value - means[sensor]) / stds[sensor]
     return standardized_data
 
+def calculate_difference(current_data, previous_data):
+    """직전 데이터와 현재 데이터의 차이 계산"""
+    return {sensor: current_data[sensor] - previous_data[sensor] for sensor in current_data}
 
 def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_data):
     global window_open, hold_mask_indoor, hold_mask_outdoor, indoor_origin_cause, previous_data, previous_time
@@ -157,20 +169,30 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     return window_open, action, influencing_sensors
 
 
-def check_and_actuate_window(indoor_data, outdoor_data):
+def check_and_actuate_window(indoor_data, outdoor_data, previous_data=None):
     # 각 센서 값 출력
     print("\n[현재 센서 수치]")
     print("실내 센서 수치:")
-    for sensor, value in indoor_data.items():
-        print(f"  {sensor}: {value:.2f}")
-
-    print("실외 센서 수치:")
-    for sensor, value in outdoor_data.items():
-        print(f"  {sensor}: {value:.2f}")
+    
 
     if DATA_PREPROCESSING_TYPE == "standard":
+        for sensor, value in indoor_data.items():
+            print(f"  {sensor}: {value:.2f}")
+        print("실외 센서 수치:")
+        for sensor, value in outdoor_data.items():
+            print(f"  {sensor}: {value:.2f}")
         indoor_data = standardize_real_time_data(indoor_data, sensor_means, sensor_stds)
         outdoor_data = standardize_real_time_data(outdoor_data, sensor_means, sensor_stds)
+    elif DATA_PREPROCESSING_TYPE == "difference":
+        for (sensor, value), (s2, v2) in zip(indoor_data.items(), previous_data["indoor"].items()):
+            print(f"  {sensor}: {value:.2f}  {v2:.2f}")
+        print("실외 센서 수치:")
+        for (sensor, value), (s2, v2) in zip(outdoor_data.items(), previous_data["outdoor"].items()):
+            print(f"  {sensor}: {value:.2f}  {v2:.2f}")
+        indoor_raw = indoor_data
+        outdoor_raw = outdoor_data
+        indoor_data = calculate_difference(indoor_data, previous_data["indoor"])
+        outdoor_data = calculate_difference(outdoor_data, previous_data["outdoor"])
 
     # 입력 데이터도 float16으로 변환
     indoor_data_fp16 = {k: torch.tensor(v, dtype=torch.float16) for k, v in indoor_data.items()}
@@ -179,8 +201,14 @@ def check_and_actuate_window(indoor_data, outdoor_data):
     indoor_anomalies = detect_anomaly(indoor_data_fp16, model, THRESHOLD)
     outdoor_anomalies = detect_anomaly(outdoor_data_fp16, model, THRESHOLD)
 
-    indoor_anomaly_mask = generate_bitmask(indoor_data, indoor_anomalies, THRESHOLD)
-    outdoor_anomaly_mask = generate_bitmask(outdoor_data, outdoor_anomalies, THRESHOLD)
+    if DATA_PREPROCESSING_TYPE == "difference":
+        indoor_anomaly_mask = generate_bitmask(indoor_raw, indoor_anomalies, THRESHOLD, "in")
+        outdoor_anomaly_mask = generate_bitmask(outdoor_raw, outdoor_anomalies, THRESHOLD, "out")
+    else:
+        indoor_anomaly_mask = generate_bitmask(indoor_data, indoor_anomalies, THRESHOLD, "in")
+        outdoor_anomaly_mask = generate_bitmask(outdoor_data, outdoor_anomalies, THRESHOLD, "out")
+    print(f"{indoor_anomalies}    {outdoor_anomalies}")
+    print(f"{indoor_anomaly_mask}    {outdoor_anomaly_mask}")
 
     window_status, action, influencing_sensors = determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, {"indoor": indoor_data, "outdoor": outdoor_data})
     print("\n창문 상태:", action)

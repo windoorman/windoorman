@@ -1,4 +1,4 @@
-# improved_autoencoder_training.py - 데이터 정규화 추가 및 개선된 학습 코드
+# improved_autoencoder_training.py - 데이터 정규화 및 직전 측정치와의 차이 기반 학습 코드
 import torch
 import torch.nn as nn
 from data_simulator import generate_korean_data
@@ -16,10 +16,14 @@ def standardize_data_by_sensor(data):
     standardized_data["eco2"] = (data["eco2"] - data["eco2"].mean()) / data["eco2"].std()
     return standardized_data
 
+def calculate_differences(data):
+    """현재 측정치와 직전 측정치의 차이 계산"""
+    diff_data = data.diff().dropna()  # 직전 측정치와의 차이를 구하고 첫 행 제거
+    return diff_data
 
-class ImprovedAutoencoder(nn.Module):
+class DifferenceAutoencoder(nn.Module):
     def __init__(self, input_dim=6):
-        super(ImprovedAutoencoder, self).__init__()
+        super(DifferenceAutoencoder, self).__init__()
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, 16),
             nn.ReLU(),
@@ -51,13 +55,16 @@ def normalize_data(data):
     return normalized_data
 
 def train_improved_autoencoder(data, num_epochs=150, batch_size=32, learning_rate=0.0001):
-    # 데이터 정규화
-    normalized_data = normalize_data(data[["temperature", "humidity", "pm10", "pm25", "voc", "eco2"]])
+    # 데이터 전처리: 차이 계산 후 정규화
+    diff_data = calculate_differences(data)  # 직전 측정치와의 차이 계산
+    normalized_data = normalize_data(diff_data[["temperature", "humidity", "pm10", "pm25", "voc", "eco2"]])
+    
+    # 텐서로 변환하여 DataLoader에 추가
     train_data = torch.tensor(normalized_data.values, dtype=torch.float32)
     train_dataset = torch.utils.data.TensorDataset(train_data)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
 
-    model = ImprovedAutoencoder(input_dim=6)
+    model = DifferenceAutoencoder(input_dim=6)
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -87,10 +94,9 @@ def train_improved_autoencoder(data, num_epochs=150, batch_size=32, learning_rat
         os.makedirs(models_dir)
 
     # 모델 저장
-    model_path = os.path.join(models_dir, "further_improved_trained_autoencoder_korea.pth")
+    model_path = os.path.join(models_dir, "diff_trained_autoencoder_korea.pth")
     torch.save(model.state_dict(), model_path)
     print(f"Model saved as {model_path}")
-
 
 if __name__ == "__main__":
     # 데이터 생성 및 표준화 적용
@@ -100,4 +106,3 @@ if __name__ == "__main__":
 
     # 모델 학습 실행
     train_improved_autoencoder(standardized_data)
-
