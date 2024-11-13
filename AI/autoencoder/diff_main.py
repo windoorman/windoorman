@@ -36,7 +36,7 @@ def main_loop(es_client, index_name, springboot_url, mac_address):
         
         # 창문 상태가 변경되었을 경우에만 서버로 전송
         if current_window_status != previous_window_status:
-            action = "열림" if current_window_status == WindowAction.OPEN else "닫힘"
+            action = "open" if current_window_status == WindowAction.OPEN else "close"
             send_window_action_to_springboot(mac_address, action, issues, springboot_url)
             previous_window_status = current_window_status
         
