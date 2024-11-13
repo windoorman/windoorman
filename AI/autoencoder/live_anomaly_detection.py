@@ -4,8 +4,11 @@ from detect_anomalies import detect_anomaly
 from autoencoder_model import Autoencoder
 from utils import sensor_thresholds, generate_bitmask, rapid_change_threshold, interpret_bitmask, standardized_thresholds
 import os
+from enums import WindowAction
 
 DATA_PREPROCESSING_TYPE = "standard"
+
+
 if DATA_PREPROCESSING_TYPE == "standard":
     THRESHOLD = standardized_thresholds
     # 모델 경로 설정 및 로드
@@ -43,6 +46,8 @@ previous_time = time.time()
 #             bitmask |= 0b11 << bit_position
 #             print(f"[DEBUG] {sensor} anomaly detected, setting bitmask to 0b11")
 #     return bitmask
+
+
 # 학습 데이터에서 미리 계산한 평균 및 표준편차
 sensor_means = {
     "temperature": 20,
@@ -82,7 +87,7 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
         previous_data["indoor"] = current_data["indoor"]
         previous_data["outdoor"] = current_data["outdoor"]
         previous_time = current_time
-        return action, influencing_sensors
+        return window_open, action, influencing_sensors
 
     # 비트마스크 갱신
     updated_indoor_mask = 0
@@ -184,5 +189,7 @@ def check_and_actuate_window(indoor_data, outdoor_data):
 
     issues = interpret_bitmask(indoor_anomaly_mask, outdoor_anomaly_mask)
     print("Detected issues:", issues)
+
+    window_status = WindowAction.OPEN if window_status else WindowAction.CLOSE
 
     return window_status, issues
