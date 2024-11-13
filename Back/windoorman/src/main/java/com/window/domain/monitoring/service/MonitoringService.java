@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +37,15 @@ public class MonitoringService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final EmitterRepository emitterRepository;
     private final ElasticsearchClient esClient;
+    private static final List<String> CATEGORY_TO_FIELD_LIST = Arrays.asList(
+            "",
+            "humid",
+            "temp",
+            "co2",
+            "tvoc",
+            "pm10",
+            "pm25"
+    );
 
     public MonitoringService(RedisTemplate<String, Object> redisTemplate, EmitterRepository emitterRepository, ElasticsearchClient esClient) {
         this.redisTemplate = redisTemplate;
@@ -160,25 +170,26 @@ public class MonitoringService {
         Member member = MemberInfo.getMemberInfo(authentication);
         LocalDate now = LocalDateTime.now(ZoneOffset.UTC).toLocalDate();
         String indexName = "1-" + windowId+"-2024.11.12";
+        String fieldName = CATEGORY_TO_FIELD_LIST.get(category);
         try {
             SearchResponse<Void> search = esClient.search(s -> s
                             .index(indexName) // Replace with your actual index name
                             .size(0) // Adjust size based on expected results; you can use pagination if necessary
-                            .aggregations("hourly_avg_humidity", a -> a
+                            .aggregations("hourly_avg", a -> a
                                     .dateHistogram(h -> h
                                             .field("@timestamp")
                                             .fixedInterval(Time.of(t->t.time("1h"))) // Group by hour
                                             .format("yyyy-MM-dd HH:mm:ss")
                                     )           
-                                    .aggregations("avg_humidity", subAgg -> subAgg
-                                            .avg(avg -> avg.field("humid")) // Calculate average of humidity
+                                    .aggregations("avg_value", subAgg -> subAgg
+                                            .avg(avg -> avg.field(fieldName)) // Calculate average of humidity
                                     )
                             ),
                     Void.class
             );
 
             DateHistogramAggregate histogram = search.aggregations()
-                    .get("hourly_avg_humidity")
+                    .get("hourly_avg")
                     .dateHistogram();
 
             for (var bucket : histogram.buckets().array()) {
@@ -186,8 +197,8 @@ public class MonitoringService {
                 assert dateStr != null;
                 LocalDateTime dateTime = LocalDateTime.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-                double avgHumidity = bucket.aggregations().get("avg_humidity").avg().value();
-                responses.add(new GraphDataResponse(dateTime, avgHumidity));
+                double avgValue = bucket.aggregations().get("avg_value").avg().value();
+                responses.add(new GraphDataResponse(dateTime, avgValue));
             }
         } catch (Exception e) {
             e.printStackTrace();
