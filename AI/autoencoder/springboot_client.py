@@ -15,6 +15,7 @@ def send_window_action_to_springboot(mac_address, open_status, issues, springboo
         "openTime": datetime.now().isoformat(),
         "reason": issues
     }
+    print(f"보냅니다!!!!!!!!!!!!!!!!!!!!!! {payload}")
     
     try:
         response = requests.post(springboot_url, json=payload)
