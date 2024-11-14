@@ -10,6 +10,7 @@ import com.window.domain.windows.model.repository.WindowsRepository;
 import com.window.global.exception.CustomException;
 import com.window.global.exception.ExceptionResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
