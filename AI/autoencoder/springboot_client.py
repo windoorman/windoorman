@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-def send_window_action_to_springboot(mac_address, open_status, issues, springboot_url, open_url, close_url, window_id=2):
+def send_window_action_to_springboot(mac_address, open_status, issues, springboot_url, open_url, close_url, window_id=4):
     """
     Spring Boot 서버에 창문 개폐 등록 요청을 전송합니다.
     :param mac_address: Raspberry Pi의 MAC 주소
