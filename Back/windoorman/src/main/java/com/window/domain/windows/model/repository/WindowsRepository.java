@@ -13,4 +13,6 @@ public interface WindowsRepository extends JpaRepository<Windows, Long> {
     Windows findByDeviceId(String deviceId);
 
     boolean existsByDeviceId(String deviceId);
+
+    Long countByPlace_Id(Long placeId);
 }

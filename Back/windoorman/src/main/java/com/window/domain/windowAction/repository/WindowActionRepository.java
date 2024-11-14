@@ -1,6 +1,5 @@
 package com.window.domain.windowAction.repository;
 
-import com.window.domain.windowAction.dto.CountActionDto;
 import com.window.domain.windowAction.entity.WindowAction;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,13 +21,16 @@ public interface WindowActionRepository extends JpaRepository<WindowAction, Long
             @Param("startOfDay") LocalDateTime startOfDay,
             @Param("endOfDay") LocalDateTime endOfDay);
 
-    @Query("SELECT new com.window.domain.windowAction.dto.CountActionDto(COUNT(DISTINCT w.id), COUNT(wa)) " +
+    @Query("SELECT COUNT(wa) " +
             "FROM WindowAction wa " +
-            "RIGHT JOIN Windows w ON wa.windows.id = w.id " +
-            "WHERE w.place.id = :placeId")
-    Optional<CountActionDto> findByCountAction(
-            @Param("placeId") Long placeId
+            "INNER JOIN wa.windows w " +
+            "WHERE w.place.id = :placeId " +
+            "AND wa.openTime >= :startOfDay " +
+            "AND wa.openTime < :endOfDay")
+    Long countByCountAction(
+            @Param("placeId") Long placeId,
+            @Param("startOfDay") LocalDateTime startOfDay,
+            @Param("endOfDay") LocalDateTime endOfDay
     );
-
 
 }

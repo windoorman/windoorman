@@ -122,8 +122,6 @@ public class MonitoringService {
 
     public void processSensorData(String payload) {
 
-        //TODO: MQTT DATA TO DTO
-
         String[] pairs = payload.split(":"); // 숫자와 문자 경계에서 split
         List<String> values = new ArrayList<>();
 
@@ -131,13 +129,15 @@ public class MonitoringService {
             String value = pairs[i].trim().split(" ")[0]; // 공백 이후 문자를 제거하여 값만 남기기
             values.add(value);
         }
-        SensorDataDto sensorDataDto =setDto(values);
-
+        SensorDataDto sensorDataDto = setDto(values);
+        log.info(values+"");
         // store last data to redis
-        onMessageReceived(sensorDataDto.getWindowId(), sensorDataDto);
+        onMessageReceived(sensorDataDto.getWindowsId(), sensorDataDto);
 
         // send dto to client
-        sendToClient(sensorDataDto.getWindowId(), sensorDataDto);
+        if(values.get(8).equals("1")) {
+            sendToClient(sensorDataDto.getWindowsId(), sensorDataDto);
+        }
     }
     private SensorDataDto setDto(List<String> values) {
         Long windowId = Long.parseLong(values.get(0));
@@ -198,8 +198,8 @@ public class MonitoringService {
         LocalDateTime startDate = endDate.minusHours(24);
 
         // 오늘과 어제 날짜의 인덱스를 생성
-        String todayIndex = endDate.format(formatter);
-        String yesterdayIndex = startDate.format(formatter);
+        String todayIndex = windowId+"-*-"+endDate.format(formatter);
+        String yesterdayIndex = windowId+"-*-"+startDate.format(formatter);
 
 
         String fieldName = CATEGORY_TO_FIELD_LIST.get(category);

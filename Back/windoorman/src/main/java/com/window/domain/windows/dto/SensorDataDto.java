@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorDataDto {
-    private Long windowId;
+    private Long windowsId;
     private Double co2;
     private Double voc;
     private Double pm25;

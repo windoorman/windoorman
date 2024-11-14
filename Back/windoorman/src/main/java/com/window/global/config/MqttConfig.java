@@ -16,6 +16,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 
+import java.util.UUID;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class MqttConfig {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setServerURIs(new String[]{brokerUrl});
         options.setCleanSession(true);
+        options.setAutomaticReconnect(true); // 자동 재연결 활성화
         return options;
     }
 
@@ -44,7 +47,7 @@ public class MqttConfig {
     @Bean
     public MqttPahoMessageDrivenChannelAdapter inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(clientId, mqttClientFactory(), "sensor/#");
+                new MqttPahoMessageDrivenChannelAdapter(clientId+"-"+ UUID.randomUUID(), mqttClientFactory(), "sensor/#");
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
