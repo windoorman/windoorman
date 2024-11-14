@@ -50,6 +50,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/members/reissue").permitAll()
                 .requestMatchers("/sensors/**").permitAll()
+                .requestMatchers("/windows/open/auto/**", "/windows/close/auto/**").hasAuthority("WHITELIST")
                 .requestMatchers("/places/**", "/schedules/**", "/windows/**", "/reports/**").hasRole("USER")
                 .requestMatchers("/actions/avg/**").hasRole("USER")
                 .requestMatchers("/actions/**").hasAuthority("WHITELIST")

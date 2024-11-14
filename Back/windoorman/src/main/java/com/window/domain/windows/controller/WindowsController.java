@@ -75,14 +75,32 @@ public class WindowsController {
 
     @GetMapping("/open/{windowsId}")
     public ResponseEntity<?> openWindow(@PathVariable("windowsId") Long windowsId) throws JsonProcessingException {
-        String data = windowService.open(windowsId);
+        String data = windowService.open(windowsId, false);
         JsonNode jsonData = objectMapper.readTree(data);
         return ResponseEntity.status(200).body(jsonData);
     }
 
     @GetMapping("/close/{windowsId}")
     public ResponseEntity<?> closeWindow(@PathVariable("windowsId") Long windowsId) throws JsonProcessingException {
-        String data = windowService.close(windowsId);
+        String data = windowService.close(windowsId, false);
+        JsonNode jsonData = objectMapper.readTree(data);
+        return ResponseEntity.status(200).body(jsonData);
+    }
+
+    @GetMapping("/open/auto/{windowsId}")
+    public ResponseEntity<?> openAutoWindow(@PathVariable("windowsId") Long windowsId) throws JsonProcessingException {
+        String data = windowService.open(windowsId, true);
+        if(data == null)
+            return ResponseEntity.status(200).build();
+        JsonNode jsonData = objectMapper.readTree(data);
+        return ResponseEntity.status(200).body(jsonData);
+    }
+
+    @GetMapping("/close/auto/{windowsId}")
+    public ResponseEntity<?> closeAutoWindow(@PathVariable("windowsId") Long windowsId) throws JsonProcessingException {
+        String data = windowService.close(windowsId, true);
+        if(data == null)
+            return ResponseEntity.status(200).build();
         JsonNode jsonData = objectMapper.readTree(data);
         return ResponseEntity.status(200).body(jsonData);
     }

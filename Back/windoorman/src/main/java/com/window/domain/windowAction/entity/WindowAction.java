@@ -16,11 +16,12 @@ import java.time.LocalDateTime;
 public class WindowAction {
 
     @Builder
-    public WindowAction(Windows windows, Open open, LocalDateTime openTime, String reason) {
+    public WindowAction(Windows windows, Open open, LocalDateTime openTime, String reason, String status) {
         this.windows = windows;
         this.open = open;
         this.openTime = openTime;
         this.reason = reason;
+        this.status = status;
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +41,8 @@ public class WindowAction {
 
     @Column(name = "reason", nullable = false, length = 300)
     private String reason;
+
+    @Column(name = "status", nullable = false, length = 500)
+    private String status;
 
 }

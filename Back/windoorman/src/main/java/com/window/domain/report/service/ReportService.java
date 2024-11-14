@@ -94,7 +94,7 @@ public class ReportService {
         for (WindowAction windowAction : windowActions) {
             responses.add(ActionsReportResponseDto.builder()
                     .actionReportId(windowAction.getId())
-                    .open(windowAction.getOpen().toString())
+                    .open(windowAction.getOpen().toString().equals("open") ? "열림" : "닫힘")
                     .openTime(windowAction.getOpenTime())
                     .build());
         }
@@ -133,6 +133,8 @@ public class ReportService {
 
         String start = openTime.minusHours(1).toString();
         String end = openTime.toString();
+        log.info("Start: {}", start);
+        log.info("end: {}", end);
 
         Criteria criteria = new Criteria("@timestamp").between(start, end);
         CriteriaQuery query = new CriteriaQuery(criteria);
@@ -143,7 +145,7 @@ public class ReportService {
                 .getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .toList());
-
+        log.info("elasticList: {}", elasticList.size());
 
         List<GraphResponseDto> dtos = new ArrayList<>();
         for (Graph e : elasticList) {
@@ -151,6 +153,7 @@ public class ReportService {
                     .pm10(e.getPm10())
                     .pm25(e.getPm25())
                     .humid(e.getHumid())
+                    .temp(e.getTemp())
                     .co2(e.getCo2())
                     .tvoc(e.getTvoc())
                     .timestamp(e.getTimestamp())
@@ -164,7 +167,7 @@ public class ReportService {
 
         Map<String, Object> responseMap = new HashMap<>();
 
-        responseMap.put("reason", reason);
+        responseMap.put("reason", reason.split("_")[0]);
         responseMap.put("data", dtos);
 
         return responseMap;
