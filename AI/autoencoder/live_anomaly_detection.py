@@ -168,7 +168,7 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     # 온도에따라 문열기
     if hold_mask_outdoor == 0 and hold_mask_indoor == 0 and outdoor_raw["temperature"] >= 26:
         print("[ACCIDENT] SO HOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(f"CURR_TEMP: {outdoor_raw["temperature"]}")
+        print(f"CURR_TEMP: {outdoor_raw['temperature']}")
         window_open = True
 
     print(f"[DEBUG] Window action: {action}, Influencing sensors: {influencing_sensors}")
