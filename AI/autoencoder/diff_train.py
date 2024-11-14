@@ -98,11 +98,50 @@ def train_improved_autoencoder(data, num_epochs=150, batch_size=32, learning_rat
     torch.save(model.state_dict(), model_path)
     print(f"Model saved as {model_path}")
 
+# if __name__ == "__main__":
+#     # 데이터 생성 및 표준화 적용
+#     time_steps = 24 * 60 * 60 // 5  # 하루 동안 5초 간격 데이터
+#     data = generate_korean_data(time_steps)
+#     standardized_data = standardize_data_by_sensor(data)  # 표준화 적용
+
+#     # 모델 학습 실행
+#     train_improved_autoencoder(standardized_data)
+
+import json
+
+def save_means_and_stds(data, file_path="sensor_means_stds.json"):
+    """센서별 평균 및 표준편차를 파일에 저장"""
+    means = {
+        "temperature": data["temperature"].mean(),
+        "humidity": data["humidity"].mean(),
+        "pm10": data["pm10"].mean(),
+        "pm25": data["pm25"].mean(),
+        "voc": data["voc"].mean(),
+        "eco2": data["eco2"].mean(),
+    }
+
+    stds = {
+        "temperature": data["temperature"].std(),
+        "humidity": data["humidity"].std(),
+        "pm10": data["pm10"].std(),
+        "pm25": data["pm25"].std(),
+        "voc": data["voc"].std(),
+        "eco2": data["eco2"].std(),
+    }
+
+    # JSON 파일로 저장
+    with open(file_path, 'w') as f:
+        json.dump({"means": means, "stds": stds}, f)
+    print(f"Means and stds saved to {file_path}")
+
 if __name__ == "__main__":
     # 데이터 생성 및 표준화 적용
     time_steps = 24 * 60 * 60 // 5  # 하루 동안 5초 간격 데이터
     data = generate_korean_data(time_steps)
-    standardized_data = standardize_data_by_sensor(data)  # 표준화 적용
 
-    # 모델 학습 실행
+    # 평균 및 표준편차 저장
+    save_means_and_stds(data)
+
+    # 표준화 및 모델 학습
+    standardized_data = standardize_data_by_sensor(data)
     train_improved_autoencoder(standardized_data)

@@ -168,12 +168,18 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     print(f"[DEBUG] Window action: {action}, Influencing sensors: {influencing_sensors}")
     return window_open, action, influencing_sensors
 
+import json
+def load_means_and_stds(file_path="sensor_means_stds.json"):
+    """저장된 평균 및 표준편차를 불러오기"""
+    with open(file_path, 'r') as f:
+        data = json.load(f)
+    return data["means"], data["stds"]
+
 
 def check_and_actuate_window(indoor_data, outdoor_data, previous_data=None):
     # 각 센서 값 출력
     print("\n[현재 센서 수치]")
     print("실내 센서 수치:")
-    
 
     if DATA_PREPROCESSING_TYPE == "standard":
         for sensor, value in indoor_data.items():
@@ -189,8 +195,13 @@ def check_and_actuate_window(indoor_data, outdoor_data, previous_data=None):
         print("실외 센서 수치:")
         for (sensor, value), (s2, v2) in zip(outdoor_data.items(), previous_data["outdoor"].items()):
             print(f"  {sensor}: {value:.2f}  {v2:.2f}")
+            # 추론 시 사용 예시
+        means, stds = load_means_and_stds()
+        
         indoor_raw = indoor_data
         outdoor_raw = outdoor_data
+        indoor_data = standardize_real_time_data(indoor_data, means, stds)
+        outdoor_data = standardize_real_time_data(outdoor_data, means, stds)
         indoor_data = calculate_difference(indoor_data, previous_data["indoor"])
         outdoor_data = calculate_difference(outdoor_data, previous_data["outdoor"])
 
