@@ -23,10 +23,13 @@ public class Graph {
     private Double pm10;
     private Double pm25;
     private Double humid;
+    private Double temp;
     private Long co2;
     private Long tvoc;
 
     @Field(name = "@timestamp", type = FieldType.Date)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
+
+    private int isInside;
 }

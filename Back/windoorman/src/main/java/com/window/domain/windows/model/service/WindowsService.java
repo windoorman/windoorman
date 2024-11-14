@@ -207,7 +207,13 @@ public class WindowsService {
         return parseList;
     }
 
-    public String open(Long windowsId){
+    public String open(Long windowsId, boolean python){
+        if(python){
+            Windows windows = windowsRepository.findById(windowsId)
+                    .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
+            if(!windows.isAuto()) return null;
+        }
+
         String jsonData = """
         {
             "commands": [
@@ -233,7 +239,12 @@ public class WindowsService {
         return data;
     }
 
-    public String close(Long windowsId){
+    public String close(Long windowsId, boolean python){
+        if(python){
+            Windows windows = windowsRepository.findById(windowsId)
+                    .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
+            if(!windows.isAuto()) return null;
+        }
         String jsonData = """
         {
             "commands": [
