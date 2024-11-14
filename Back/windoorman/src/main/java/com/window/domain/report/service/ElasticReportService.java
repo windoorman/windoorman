@@ -58,10 +58,10 @@ public class ElasticReportService {
         LongTermsAggregate byPlaceIdTerms = byPlaceIdAgg.lterms();
         for (LongTermsBucket bucket : byPlaceIdTerms.buckets().array()) {
             Long byPlaceId = bucket.key();
-            float maxTemp = (float) bucket.aggregations().get("maxTemp").max().value();
-            float minTemp = (float) bucket.aggregations().get("minTemp").min().value();
-            float avgHumid = (float) bucket.aggregations().get("avgHumid").avg().value();
-            float avgPm10 = (float) bucket.aggregations().get("avgPm10").avg().value();
+            Double maxTemp = bucket.aggregations().get("maxTemp").max().value();
+            Double minTemp = bucket.aggregations().get("minTemp").min().value();
+            Double avgHumid = bucket.aggregations().get("avgHumid").avg().value();
+            Double avgPm10 = bucket.aggregations().get("avgPm10").avg().value();
 
             log.info("byPlaceId: {}, MaxTemp: {}, MinTemp: {}, AvgHumid: {}, AvgPm10: {}", byPlaceId, maxTemp, minTemp, avgHumid, avgPm10);
 
