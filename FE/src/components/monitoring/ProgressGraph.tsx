@@ -43,7 +43,7 @@ const ProgressGraph = () => {
     (state) => state.fetchSensorRecords
   );
   const [sensor, setSensor] = useState(sensorOptions[0]);
-  const [range, setRange] = useState(rangeOptions[2]);
+  const [range, setRange] = useState(rangeOptions[0]);
   const [sensorData, setSensorData] = useState<SensorRecord[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
