@@ -23,22 +23,22 @@ public class Report {
     private Place place;
 
     @Column(name = "low_temperature", nullable = false)
-    private Float lowTemperature;
+    private Double lowTemperature;
 
     @Column(name = "high_temperature", nullable = false)
-    private Float highTemperature;
+    private Double highTemperature;
 
     @Column(name = "humidity", nullable = false)
-    private Float humidity;
+    private Double humidity;
 
     @Column(name = "air_condition", nullable = false)
-    private Float airCondition;
+    private Double airCondition;
 
     @CreatedDate
     @Column(name = "report_date", nullable = false, updatable = false)
     private LocalDate reportDate;
 
-    private Report(Long id, Place place, Float lowTemperature, Float highTemperature, Float humidity, Float airCondition, LocalDate reportDate) {
+    private Report(Long id, Place place, Double lowTemperature, Double highTemperature, Double humidity, Double airCondition, LocalDate reportDate) {
         this.id = id;
         this.place = place;
         this.lowTemperature = lowTemperature;
