@@ -6,7 +6,7 @@ from enums import AnomalyStatus
 sensor_thresholds = {
     "temperature": 36, #30,   # 예: 30°C 이상일 경우 이상으로 간주
     "humidity": 90, #70,      # 예: 70% 이상일 경우 이상으로 간주
-    "pm10": 100,
+    "pm10": 20,
     "pm25": 50,
     "voc": 200,
     "eco2": 1000
@@ -81,7 +81,7 @@ def generate_bitmask(sensor_values, anomalies, thresholds, in_and_out):
         if value > thresholds[sensor]:  # 임계치 초과 상태
             bitmask |= 0b01 << bit_position
             print(f"[DEBUG] {sensor}_{in_and_out} value {value} exceeds threshold {thresholds[sensor]} (bitmask set to 0b01)")
-        if anomalies[sensor]:  # 재구성 오류로 인한 이상 상태
+        if value > thresholds[sensor] and anomalies[sensor]:  # 재구성 오류로 인한 이상 상태
             bitmask |= 0b11 << bit_position
             print(f"[DEBUG] {sensor}_{in_and_out} anomaly detected, setting bitmask to 0b11")
     return bitmask
