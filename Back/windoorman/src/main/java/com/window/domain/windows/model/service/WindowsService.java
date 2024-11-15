@@ -46,6 +46,9 @@ public class WindowsService {
     @Value("${smartthings.secret}")
     private String smartThingsSecret;
 
+    @Value("${spring.redis.set.key}")
+    private String redisSetKey;
+
 
     public Map<String, Object> getWindows(Long placeId) {
         Place place = placeRepository.findById(placeId).
@@ -211,6 +214,7 @@ public class WindowsService {
         if(python){
             Windows windows = windowsRepository.findById(windowsId)
                     .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
+            if(checkActiveSchedule(windowsId)) return null;
             if(!windows.isAuto()) return null;
         }
 
@@ -244,6 +248,7 @@ public class WindowsService {
             Windows windows = windowsRepository.findById(windowsId)
                     .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
             if(!windows.isAuto()) return null;
+            if(checkActiveSchedule(windowsId)) return null;
         }
         String jsonData = """
         {
@@ -277,6 +282,11 @@ public class WindowsService {
         return windowsRepository.findById(windowsId)
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION))
                 .getDeviceId();
+    }
+
+    // 스케줄에 의해 창문이 열려있는지 판단
+    public boolean checkActiveSchedule(Long windowsId) {
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(redisSetKey, String.valueOf(windowsId)));
     }
 
 }
