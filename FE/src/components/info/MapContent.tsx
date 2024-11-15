@@ -13,14 +13,16 @@ const MapContent = () => {
   const HomesData = useHomeStore((state) => state.homes);
   const [modalContent, setModalContent] = useState<string | null>(null);
   const [showReportButton, setShowReportButton] = useState(false);
+  const [homeId, setHomeId] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const navigateReport = () => {
-    navigate("/report");
+    navigate("/report", { state: { homeId } });
   };
 
   const fetchAvgActions = async (placeId: number) => {
     try {
+      setHomeId(placeId);
       const response = await axiosApi.get(`/actions/avg/${placeId}`);
       const avgActions = response.data.avgActions;
 

@@ -33,9 +33,21 @@ export interface AirAnalysisResponse {
   actionsReport: any[]; // 필요에 따라 타입 정의
 }
 
+export interface WindowStates {
+  actionReportId: number;
+  open: string;
+  openTime: string;
+}
+
+export interface WindowSearchResponse {
+  windows: { windowsId: number; name: string; state: string; auto: boolean }[];
+  placeName: string;
+}
+
 interface WindowState {
   windows: WindowItem[];
   devices: DeviceItem[];
+  windowStates: WindowStates[];
   buttonState: {
     [id: number]: { disabled: boolean; remainingTime: number | null };
   };
@@ -59,12 +71,16 @@ interface WindowState {
     range: number
   ) => Promise<SensorRecord[]>;
   airAnalysis: (homeId: number, reportDate: string) => void;
+  windowStatus: (windowId: number, reportDate: string) => void;
+  windowIdSearch: (homeId: number) => Promise<WindowSearchResponse>;
+  statusGraph: (actionReportId: number) => void;
 }
 
 const useWindowStore = create<WindowState>((set) => ({
   windows: [],
   devices: [],
   buttonState: {},
+  windowStates: [],
 
   fetchWindows: async (homeId: number) => {
     try {
@@ -192,6 +208,35 @@ const useWindowStore = create<WindowState>((set) => ({
     } catch (error) {
       console.error("Failed to fetch air analysis: ", error);
       return null;
+    }
+  },
+  windowStatus: async (windowId: number, reportDate: string) => {
+    try {
+      const response = await axiosApi.get(
+        `/reports/actions/${windowId}/${reportDate}`
+      );
+      console.log(response.data);
+      set({ windowStates: response.data });
+    } catch (error) {
+      console.error("Failed to fetch window status: ", error);
+    }
+  },
+  windowIdSearch: async (homeId: number) => {
+    try {
+      const response = await axiosApi.get(`/windows/${homeId}`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch window id: ", error);
+      return [];
+    }
+  },
+  statusGraph: async (actionReportId: number) => {
+    try {
+      const response = await axiosApi.get(`/reports/graphs/${actionReportId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch status graph: ", error);
     }
   },
 }));

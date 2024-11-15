@@ -13,7 +13,6 @@ interface DateSelectorProps {
 
 const DateSelector = ({ selectedDate, setSelectedDate }: DateSelectorProps) => {
   const today = new Date();
-  today.setDate(today.getDate() - 1); // 어제 날짜로 설정
 
   const formatDate = (date: Date) => {
     return date.toISOString().split("T")[0].replace(/-/g, ".");

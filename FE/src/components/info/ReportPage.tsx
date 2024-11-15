@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+// import { useLocation } from "react-router-dom";
 import DateSelector from "./DateSelector";
 import AirStatus from "./AirStatus";
 import WindowStatus from "./WindowStatus";
@@ -12,6 +13,8 @@ const ReportPage = () => {
     placeId: number,
     formattedDate: string
   ) => Promise<AirAnalysisResponse | null>;
+  // const location = useLocation();
+  // const placeId = location.state.homeId;
   const placeId = 7;
   const placeName = useHomeStore(
     (state) => state.homes.find((home) => home.id === placeId)?.name
@@ -30,9 +33,9 @@ const ReportPage = () => {
         formattedDate
       );
       if (response) {
-        // null이 아닌 경우에만 처리
-        console.log(response); // 응답 데이터를 콘솔에 출력하여 확인
         setAirReport(response.airReport);
+      } else {
+        setAirReport(null);
       }
     };
     fetchData();
@@ -52,8 +55,10 @@ const ReportPage = () => {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
       />
-      {airReport && <AirStatus airReport={airReport} />}
-      <WindowStatus />
+      <AirStatus airReport={airReport} reportDate={selectedDate} />
+
+      {/* 선택된 날짜를 reportDate로 전달 */}
+      <WindowStatus placeId={placeId} reportDate={selectedDate} />
     </div>
   );
 };
