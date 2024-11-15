@@ -22,6 +22,7 @@ elif DATA_PREPROCESSING_TYPE == "difference":
     # 모델 경로 설정 및 로드
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(current_dir, "..", "models", "diff_trained_autoencoder_korea.pth")
+    json_path = os.path.join(current_dir, "..", "models", "sensor_diff_means_stds.json")
     model = DifferenceAutoencoder()
 else:
     THRESHOLD = sensor_thresholds
@@ -202,7 +203,7 @@ def check_and_actuate_window(indoor_data, outdoor_data, previous_data=None):
         for (sensor, value), (s2, v2) in zip(outdoor_data.items(), previous_data["outdoor"].items()):
             print(f"  {sensor}: {value:.2f}  {v2:.2f}")
             # 추론 시 사용 예시
-        means, stds = load_means_and_stds()
+        means, stds = load_means_and_stds(json_path)
         
         indoor_raw = indoor_data
         outdoor_raw = outdoor_data

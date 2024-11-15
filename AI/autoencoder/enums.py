@@ -1,8 +1,8 @@
 from enum import Enum
 
 class WindowAction(Enum):
-    OPEN = "창문 열림"
-    CLOSE = "창문 닫음"
+    OPEN = "open"
+    CLOSE = "close"
     NO_ACTION = "No action"
 
 class AnomalyStatus(Enum):
