@@ -190,7 +190,6 @@ public class BatchConfig {
 
                 LocalTime time = LocalTime.now();
                 String redisKey = "schedules:" + time.toString().substring(0, 5);
-//                String jsonArray = redisTemplate.opsForValue().get(redisKey);
                 log.info("redisKey: {}", redisKey);
 
                 Set<String> jsonDtos = redisTemplate.opsForSet().members(redisKey);
@@ -208,13 +207,6 @@ public class BatchConfig {
                     redisTemplate.delete(redisKey);
                 }
 
-//                if(jsonArray != null){
-//                    dtoList = objectMapper.readValue(jsonArray, new TypeReference<>() {
-//                    });
-//                    redisTemplate.delete(redisKey);
-//                }
-//                log.info("dtoList: {}", dtoList);
-//
                 if(dtoList != null && nextIndex < dtoList.size()){
                     return dtoList.get(nextIndex++);
                 }
