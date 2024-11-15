@@ -1,6 +1,7 @@
 package com.window.domain.report.entity;
 
 import com.window.domain.place.entity.Place;
+import com.window.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @NoArgsConstructor
-public class Report {
+public class Report extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
