@@ -171,6 +171,9 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
         print("[ACCIDENT] SO HOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         print(f"CURR_TEMP: {outdoor_raw['temperature']}")
         window_open = True
+    if hold_mask_outdoor == 0 and hold_mask_indoor == 0:
+        print("[ACCIDENT] CONDITION IS GOOD!!!!!")
+        window_open = False
 
     print(f"[DEBUG] Window action: {action}, Influencing sensors: {influencing_sensors}")
     return window_open, action, influencing_sensors
