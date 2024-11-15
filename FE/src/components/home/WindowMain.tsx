@@ -64,7 +64,7 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
     if (currentWindow) {
       const newState = currentWindow.state === "open" ? "close" : "open";
       await toggleWindowState(windowId, newState);
-      startTimer(windowId); // 30초 동안 버튼 비활성화
+      startTimer(windowId);
     }
   };
 

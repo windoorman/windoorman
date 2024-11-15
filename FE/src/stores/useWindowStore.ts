@@ -17,6 +17,22 @@ export interface SensorRecord {
   timestamp: string;
   value: number;
 }
+
+export interface AirAnalysisResponse {
+  airReport: {
+    reportId: number;
+    lowTemperature: number;
+    highTemperature: number;
+    humidity: number;
+    airCondition: number;
+  };
+  windows: Array<{
+    windowsId: number;
+    name: string;
+  }>;
+  actionsReport: any[]; // 필요에 따라 타입 정의
+}
+
 interface WindowState {
   windows: WindowItem[];
   devices: DeviceItem[];
@@ -42,6 +58,7 @@ interface WindowState {
     category: number,
     range: number
   ) => Promise<SensorRecord[]>;
+  airAnalysis: (homeId: number, reportDate: string) => void;
 }
 
 const useWindowStore = create<WindowState>((set) => ({
@@ -103,7 +120,7 @@ const useWindowStore = create<WindowState>((set) => ({
     set((state) => ({
       buttonState: {
         ...state.buttonState,
-        [windowId]: { disabled: true, remainingTime: 30 },
+        [windowId]: { disabled: true, remainingTime: 20 },
       },
     }));
 
@@ -129,6 +146,7 @@ const useWindowStore = create<WindowState>((set) => ({
       });
     }, 1000);
   },
+
   detailWindow: async (windowsId: number) => {
     try {
       await axiosApi.get(`/windows/detail/${windowsId}`);
@@ -136,6 +154,7 @@ const useWindowStore = create<WindowState>((set) => ({
       console.error("Failed to fetch detail window: ", error);
     }
   },
+
   autoWindow: async (windowsId: number, isAuto: boolean) => {
     try {
       await axiosApi.patch(`/windows/toggle`, { windowsId, isAuto });
@@ -143,6 +162,7 @@ const useWindowStore = create<WindowState>((set) => ({
       console.error("Failed to fetch auto window: ", error);
     }
   },
+
   fetchSensorRecords: async (
     windowId: number,
     category: number,
@@ -156,6 +176,22 @@ const useWindowStore = create<WindowState>((set) => ({
     } catch (error) {
       console.error("Failed to fetch sensor records:", error);
       return [];
+    }
+  },
+
+  airAnalysis: async (
+    homeId: number,
+    reportDate: string
+  ): Promise<AirAnalysisResponse | null> => {
+    try {
+      const response = await axiosApi.get<AirAnalysisResponse>(
+        `/reports/${homeId}/${reportDate}`
+      );
+      console.log(response.data);
+      return response.data; // 명시적으로 반환
+    } catch (error) {
+      console.error("Failed to fetch air analysis: ", error);
+      return null;
     }
   },
 }));
