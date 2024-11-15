@@ -29,16 +29,6 @@ public class Schedule {
         this.isActivate = isActivate;
     }
 
-
-    public Schedule(ScheduleGroup scheduleGroup, Windows windows, Member member, LocalTime startTime, LocalTime endTime, Day day) {
-        this.scheduleGroup = scheduleGroup;
-        this.windows = windows;
-        this.member = member;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.day = day;
-    }
-
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
