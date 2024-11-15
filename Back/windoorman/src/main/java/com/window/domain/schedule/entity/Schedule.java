@@ -5,6 +5,7 @@ import com.window.domain.schedule.dto.request.ScheduleActivateRequestDto;
 import com.window.domain.schedule.dto.request.ScheduleUpdateRequestDto;
 import com.window.domain.windows.entity.Windows;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -15,6 +16,19 @@ import java.time.LocalTime;
 @Getter
 @NoArgsConstructor
 public class Schedule {
+
+    @Builder
+    public Schedule(Long id, ScheduleGroup scheduleGroup, Windows windows, Member member, LocalTime startTime, LocalTime endTime, Day day, boolean isActivate) {
+        this.id = id;
+        this.scheduleGroup = scheduleGroup;
+        this.windows = windows;
+        this.member = member;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.day = day;
+        this.isActivate = isActivate;
+    }
+
 
     public Schedule(ScheduleGroup scheduleGroup, Windows windows, Member member, LocalTime startTime, LocalTime endTime, Day day) {
         this.scheduleGroup = scheduleGroup;

@@ -23,9 +23,9 @@ public class ScheduleGroup {
     @Column(name = "create_time", nullable = false, updatable = false)
     private LocalDateTime createTime;
 
-    @ColumnDefault("false")
+    @ColumnDefault("true")
     @Column(name = "is_activate", nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean isActivate;
+    private boolean isActivate = true;
 
     public void updateActive(ScheduleActivateRequestDto dto){
         this.isActivate = dto.getIsActivate();

@@ -17,7 +17,8 @@ public class Windows {
 
 
     @Builder
-    public Windows(Place place, String name, String deviceId, boolean isAuto) {
+    public Windows(Long id, Place place, String name, String deviceId, boolean isAuto) {
+        this.id = id;
         this.place = place;
         this.name = name;
         this.deviceId = deviceId;
