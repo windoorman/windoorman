@@ -157,6 +157,7 @@ public class ReportService {
                     .co2(e.getCo2())
                     .tvoc(e.getTvoc())
                     .timestamp(e.getTimestamp())
+                    .isInside(e.getIsInside())
                     .build();
             dtos.add(dto);
         }

@@ -47,6 +47,7 @@ public class BatchConfig {
     private final DataSource dataSource;
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, ScheduleRedisDto> scheduleRedisTemplate;;
 
     @Value("${smartthings.secret}")
     private String smartThingsSecret;
@@ -141,7 +142,9 @@ public class BatchConfig {
                     .collect(Collectors.groupingBy(Schedule::getEndTime));
 
             schedulesByEndTime.forEach((endTime, schedules) -> {
-                String redisKey = "schedules:" + endTime.toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+                String redisKey = "schedules:" + endTime.format(formatter);
 
                 List<ScheduleRedisDto> redisDtos = schedules.stream()
                         .map(schedule -> {
@@ -154,7 +157,8 @@ public class BatchConfig {
                 redisDtos.forEach(dto -> {
                     try{
                         String json = objectMapper.writeValueAsString(dto);
-                        redisTemplate.opsForSet().add(redisKey, json);
+                        log.info("jsonss: {}", json);
+                        scheduleRedisTemplate.opsForSet().add(redisKey, dto);
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -188,23 +192,17 @@ public class BatchConfig {
             @Override
             public ScheduleRedisDto read() throws Exception {
 
-                LocalTime time = LocalTime.now();
-                String redisKey = "schedules:" + time.toString().substring(0, 5);
-                log.info("redisKey: {}", redisKey);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                LocalTime time = LocalTime.now().withSecond(0).withNano(0);
 
-                Set<String> jsonDtos = redisTemplate.opsForSet().members(redisKey);
+//                String redisKey = "schedules:" + time.toString().substring(0, 5);
+                String redisKey = "schedules:" + time.format(formatter);
+                log.info("redisKey: {}", redisKey);
+                Set<ScheduleRedisDto> jsonDtos = scheduleRedisTemplate.opsForSet().members(redisKey);
+
                 if(jsonDtos != null && !jsonDtos.isEmpty()){
-                    dtoList = jsonDtos.stream()
-                            .map(json -> {
-                                try{
-                                    return objectMapper.readValue(json, ScheduleRedisDto.class);
-                                } catch (JsonProcessingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .filter(Objects::nonNull)
-                            .collect(Collectors.toList());
-                    redisTemplate.delete(redisKey);
+                    dtoList = new ArrayList<>(jsonDtos);
+                    scheduleRedisTemplate.delete(redisKey);
                 }
 
                 if(dtoList != null && nextIndex < dtoList.size()){
