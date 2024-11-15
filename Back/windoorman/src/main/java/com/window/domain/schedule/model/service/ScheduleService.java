@@ -43,7 +43,15 @@ public class ScheduleService {
         Windows windows = windowsRepository.findById(dto.getWindowsId())
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_SCHEDULE_EXCEPTION));
         for(Day day : dto.getDays()){
-            Schedule schedule = new Schedule(scheduleGroup, windows, member, dto.getStartTime(), dto.getEndTime(), day);
+//            Schedule schedule = new Schedule(scheduleGroup, windows, member, dto.getStartTime(), dto.getEndTime(), day);
+            Schedule schedule = Schedule.builder()
+                    .scheduleGroup(scheduleGroup)
+                    .windows(windows)
+                    .member(member)
+                    .startTime(dto.getStartTime())
+                    .endTime(dto.getEndTime())
+                    .day(day)
+                    .build();
             scheduleRepository.save(schedule);
         }
 
@@ -98,7 +106,15 @@ public class ScheduleService {
 
         for(Day day : dto.getDays()){
             log.info("day : {}", day);
-            Schedule schedule = new Schedule(newScheduleGroup, windows, member, dto.getStartTime(), dto.getEndTime(), day);
+//            Schedule schedule = new Schedule(newScheduleGroup, windows, member, dto.getStartTime(), dto.getEndTime(), day);
+            Schedule schedule = Schedule.builder()
+                    .scheduleGroup(newScheduleGroup)
+                    .windows(windows)
+                    .member(member)
+                    .startTime(dto.getStartTime())
+                    .endTime(dto.getEndTime())
+                    .day(day)
+                    .build();
             scheduleRepository.save(schedule);
         }
 

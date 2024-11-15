@@ -105,6 +105,11 @@ public class WindowsController {
         return ResponseEntity.status(200).body(jsonData);
     }
 
+    @GetMapping("/state/{windowsId}")
+    public ResponseEntity<?> getState(@PathVariable("windowsId") Long windowsId){
+        return ResponseEntity.ok(windowService.getState(windowsId));
+    }
+
 
 
 

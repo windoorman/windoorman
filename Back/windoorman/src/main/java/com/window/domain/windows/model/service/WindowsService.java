@@ -59,28 +59,7 @@ public class WindowsService {
         List<WindowsResponseDto> dtoList = new ArrayList<>();
 
         for (Windows window : windows) {
-            String deviceId = window.getDeviceId();
-            String state = "";
-            String json = webClient.get()
-                    .uri("/" + deviceId + "/status") // API의 경로
-                    .header("Content-Type", "application/json")
-                    .headers(headers -> headers.setBearerAuth(smartThingsSecret))
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();// 응답을 처리하지 않음 (응답 본문을 무시)
-
-            try {
-                JsonNode jsonNode = new ObjectMapper().readTree(json);
-                state = jsonNode.at("/components/main/windowShade/windowShade/value").asText();
-                if (state.contains("open")) {
-                    state = "open";
-                } else if (state.contains("close")) {
-                    state = "close";
-                }
-
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            String state = getState(window.getId());
 
             dtoList.add(WindowsResponseDto.createResponseDto(window, state));
 
@@ -288,5 +267,34 @@ public class WindowsService {
     public boolean checkActiveSchedule(Long windowsId) {
         return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(redisSetKey, String.valueOf(windowsId)));
     }
+
+    public String getState(Long windowsId){
+        Windows window = windowsRepository.findById(windowsId)
+                .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
+        String deviceId = window.getDeviceId();
+        String state = "";
+        String json = webClient.get()
+                .uri("/" + deviceId + "/status") // API의 경로
+                .header("Content-Type", "application/json")
+                .headers(headers -> headers.setBearerAuth(smartThingsSecret))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();// 응답을 처리하지 않음 (응답 본문을 무시)
+
+        try {
+            JsonNode jsonNode = new ObjectMapper().readTree(json);
+            state = jsonNode.at("/components/main/windowShade/windowShade/value").asText();
+            if (state.contains("open")) {
+                state = "open";
+            } else if (state.contains("close")) {
+                state = "close";
+            }
+            return state;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }
