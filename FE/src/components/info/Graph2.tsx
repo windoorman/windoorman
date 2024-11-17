@@ -38,6 +38,7 @@ interface Ela {
 interface Config {
   label: string;
   data: number[];
+  labels: string[];
   color: string;
   bgColor: string;
 }
@@ -70,89 +71,89 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
 
   useEffect(() => {
     if (data && reason) {
+      const maxDataPoints = 100;
+
+      // useEffect 내부에서 필터링 후 데이터 제한
+      const filteredInData = data
+        .filter((entry) => entry.isInside === 1)
+        .slice(-maxDataPoints);
+      const filteredOutData = data
+        .filter((entry) => entry.isInside === 0)
+        .slice(-maxDataPoints);
+
       const inDatasetConfig = {
         eco2: {
-          label: "CO2 Levels",
-          data: data
-            .filter((entry) => entry.isInside === 1)
-            .map((entry) => entry.co2),
+          label: "CO2 Levels (Inside)",
+          data: filteredInData.map((entry) => entry.co2),
+          labels: filteredInData.map((entry) => entry.timestamp),
           color: "rgb(255, 99, 132)",
           bgColor: "rgba(255, 99, 132, 0.5)",
         },
         pm10: {
-          label: "PM10 Levels",
-          data: data
-            .filter((entry) => entry.isInside === 1)
-            .map((entry) => entry.pm10),
+          label: "PM10 Levels (Inside)",
+          data: filteredInData.map((entry) => entry.pm10),
+          labels: filteredInData.map((entry) => entry.timestamp),
           color: "rgb(53, 162, 235)",
           bgColor: "rgba(53, 162, 235, 0.5)",
         },
         pm25: {
-          label: "PM2.5 Levels",
-          data: data
-            .filter((entry) => entry.isInside === 1)
-            .map((entry) => entry.pm25),
+          label: "PM2.5 Levels (Inside)",
+          data: filteredInData.map((entry) => entry.pm25),
+          labels: filteredInData.map((entry) => entry.timestamp),
           color: "rgb(75, 192, 192)",
           bgColor: "rgba(75, 192, 192, 0.5)",
         },
         humidity: {
-          label: "Humidity Levels",
-          data: data
-            .filter((entry) => entry.isInside === 1)
-            .map((entry) => entry.humid),
+          label: "Humidity Levels (Inside)",
+          data: filteredInData.map((entry) => entry.humid),
+          labels: filteredInData.map((entry) => entry.timestamp),
           color: "rgb(255, 206, 86)",
           bgColor: "rgba(255, 206, 86, 0.5)",
         },
         temperature: {
-          label: "Temperature Levels",
-          data: data
-            .filter((entry) => entry.isInside === 1)
-            .map((entry) => entry.temp),
-          color: "rgb(255, 206, 86)",
-          bgColor: "rgba(255, 206, 86, 0.5)",
+          label: "Temperature Levels (Inside)",
+          data: filteredInData.map((entry) => entry.temp),
+          labels: filteredInData.map((entry) => entry.timestamp),
+          color: "rgb(255, 159, 64)",
+          bgColor: "rgba(255, 159, 64, 0.5)",
         },
       }[reason];
 
       const outDatasetConfig = {
         eco2: {
-          label: "CO2 Levels",
-          data: data
-            .filter((entry) => entry.isInside === 0)
-            .map((entry) => entry.co2),
+          label: "CO2 Levels (Outside)",
+          data: filteredOutData.map((entry) => entry.co2),
+          labels: filteredOutData.map((entry) => entry.timestamp),
           color: "rgb(255, 99, 132)",
           bgColor: "rgba(255, 99, 132, 0.5)",
         },
         pm10: {
-          label: "PM10 Levels",
-          data: data
-            .filter((entry) => entry.isInside === 0)
-            .map((entry) => entry.pm10),
+          label: "PM10 Levels (Outside)",
+          data: filteredOutData.map((entry) => entry.pm10),
+          labels: filteredOutData.map((entry) => entry.timestamp),
           color: "rgb(53, 162, 235)",
           bgColor: "rgba(53, 162, 235, 0.5)",
         },
         pm25: {
-          label: "PM2.5 Levels",
-          data: data
-            .filter((entry) => entry.isInside === 0)
-            .map((entry) => entry.pm25),
+          label: "PM2.5 Levels (Outside)",
+          data: filteredOutData.map((entry) => entry.pm25),
+          labels: filteredOutData.map((entry) => entry.timestamp),
           color: "rgb(75, 192, 192)",
           bgColor: "rgba(75, 192, 192, 0.5)",
         },
         humidity: {
-          label: "Humidity Levels",
-          data: data
-            .filter((entry) => entry.isInside === 0)
-            .map((entry) => entry.humid),
+          label: "Humidity Levels (Outside)",
+          data: filteredOutData.map((entry) => entry.humid),
+          labels: filteredOutData.map((entry) => entry.timestamp),
           color: "rgb(255, 206, 86)",
           bgColor: "rgba(255, 206, 86, 0.5)",
         },
         temperature: {
-          label: "Temperature Levels",
-          data: data
-            .filter((entry) => entry.isInside === 0)
-            .map((entry) => entry.temp),
-          color: "rgb(255, 206, 86)",
-          bgColor: "rgba(255, 206, 86, 0.5)",
+          label: "Temperature Levels (Outside)",
+          data: filteredOutData.map((entry) => entry.temp),
+          labels: filteredOutData.map((entry) => entry.timestamp),
+          color: "rgb(255, 159, 64)",
+          bgColor: "rgba(255, 159, 64, 0.5)",
         },
       }[reason];
 
@@ -161,41 +162,47 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
     }
   }, [data, reason]);
 
-  const labels = data.map((entry) => entry.timestamp);
-  const inData = {
-    labels,
-    datasets: [
-      {
-        label: inDataSet?.label,
-        data: inDataSet?.data,
-        borderColor: inDataSet?.color,
-        backgroundColor: inDataSet?.bgColor,
-      },
-    ],
-  };
-  const outData = {
-    labels,
-    datasets: [
-      {
-        label: outDataSet?.label,
-        data: outDataSet?.data,
-        borderColor: outDataSet?.color,
-        backgroundColor: outDataSet?.bgColor,
-      },
-    ],
-  };
-
   return (
     <div>
       <div className="contentInner">
         <div style={{ marginBottom: "20px" }}>
-          {inData && (
-            <Bar options={options} data={inData} width={500} height={200} />
+          {inDataSet && inDataSet.labels && inDataSet.labels.length > 0 && (
+            <Bar
+              options={options}
+              data={{
+                labels: inDataSet.labels,
+                datasets: [
+                  {
+                    label: inDataSet.label,
+                    data: inDataSet.data,
+                    borderColor: inDataSet.color,
+                    backgroundColor: inDataSet.bgColor,
+                  },
+                ],
+              }}
+              width={500}
+              height={200}
+            />
           )}
         </div>
         <div>
-          {outData && (
-            <Bar options={options} data={outData} width={500} height={200} />
+          {outDataSet && outDataSet.labels && outDataSet.labels.length > 0 && (
+            <Bar
+              options={options}
+              data={{
+                labels: outDataSet.labels,
+                datasets: [
+                  {
+                    label: outDataSet.label,
+                    data: outDataSet.data,
+                    borderColor: outDataSet.color,
+                    backgroundColor: outDataSet.bgColor,
+                  },
+                ],
+              }}
+              width={500}
+              height={200}
+            />
           )}
         </div>
       </div>
