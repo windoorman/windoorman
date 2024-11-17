@@ -48,9 +48,9 @@ axiosApiInstance.interceptors.response.use(
       } catch (reissueError) {
         if (
           axios.isAxiosError(reissueError) &&
-          reissueError.response?.status === 401
+          reissueError.response?.status === 400
         ) {
-          useUserStore.setState({ accessToken: null });
+          useUserStore.getState().rejectAccessToken();
           return Promise.reject(new Error("REFRESH_TOKEN_EXPIRED"));
         }
         return Promise.reject(reissueError);
