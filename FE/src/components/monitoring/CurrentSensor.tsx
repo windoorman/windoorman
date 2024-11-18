@@ -21,10 +21,8 @@ const CurrentSensor = ({ windowsId }: CurrentSensorProps) => {
     );
 
     eventSource.addEventListener("sensor", (event) => {
-      console.log("sensor event received");
       const data = JSON.parse(event.data);
       sensorData[1](data);
-      console.log("Received data:", data);
     });
 
     eventSource.onerror = (error) => {

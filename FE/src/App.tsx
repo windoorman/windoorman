@@ -29,7 +29,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/token" element={<KakaRedirect />} />
 
         {/* 보호된 경로 */}

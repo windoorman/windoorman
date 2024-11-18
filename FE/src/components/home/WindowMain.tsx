@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import WindowRegist from "./WindowRegist";
 import { Home } from "../../stores/useHomeStore";
+import SyncLoader from "react-spinners/SyncLoader"; // 로딩 스피너 임포트
 
 interface DeviceItem {
   isRegistered: boolean;
@@ -29,12 +30,19 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태를 true로 초기화
   const [searchResult, setSearchResult] = useState<DeviceItem[] | null>(null);
 
   useEffect(() => {
     if (selectedHome.id) {
-      fetchWindows(selectedHome.id);
+      setIsLoading(true); // 로딩 시작
+      fetchWindows(selectedHome.id)
+        .then(() => {
+          setIsLoading(false); // 로딩 종료
+        })
+        .catch(() => {
+          setIsLoading(false); // 에러 발생 시에도 로딩 종료
+        });
     }
   }, [fetchWindows, selectedHome.id]);
 
@@ -64,7 +72,7 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
     if (currentWindow) {
       const newState = currentWindow.state === "open" ? "close" : "open";
       await toggleWindowState(windowId, newState);
-      startTimer(windowId); // 30초 동안 버튼 비활성화
+      startTimer(windowId);
     }
   };
 
@@ -186,7 +194,17 @@ const WindowMain: React.FC<WindowMainProps> = ({ selectedHome }) => {
 
   return (
     <div>
-      {windows.length > 0 ? renderWindows() : renderNoWindows()}
+      {isLoading ? (
+        <div className="mt-8 pt-2 border-t-2 rounded-3xl">
+          <div className="flex justify-center items-center">
+            <SyncLoader color="#3752A6" />
+          </div>
+        </div>
+      ) : windows.length > 0 ? (
+        renderWindows()
+      ) : (
+        renderNoWindows()
+      )}
       {isModalOpen && (
         <WindowRegist
           homeId={selectedHome.id ?? 0}

@@ -1,18 +1,27 @@
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
   faAngleLeft,
   faAngleRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
 
-const DateSelector = () => {
+interface DateSelectorProps {
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
+}
+
+const DateSelector = ({ selectedDate, setSelectedDate }: DateSelectorProps) => {
   const today = new Date();
-  const [selectedDate, setSelectedDate] = useState(today);
 
   const formatDate = (date: Date) => {
     return date.toISOString().split("T")[0].replace(/-/g, ".");
   };
+
+  // 컴포넌트가 처음 렌더링될 때 어제 날짜를 기본값으로 설정
+  useEffect(() => {
+    setSelectedDate(today);
+  }, [setSelectedDate]);
 
   const handlePrevDate = () => {
     const prevDate = new Date(selectedDate);
@@ -24,6 +33,7 @@ const DateSelector = () => {
     const nextDate = new Date(selectedDate);
     nextDate.setDate(selectedDate.getDate() + 1);
 
+    // 선택된 날짜가 어제 이전일 때만 다음 날짜로 이동 가능
     if (nextDate <= today) {
       setSelectedDate(nextDate);
     }
@@ -44,10 +54,10 @@ const DateSelector = () => {
       </div>
       <FontAwesomeIcon
         icon={faAngleRight}
-        className={`text-[#3C4973] cursor-pointer ${
+        className={`text-[#3C4973] ${
           selectedDate.toDateString() === today.toDateString()
             ? "opacity-50 cursor-not-allowed"
-            : ""
+            : "cursor-pointer"
         }`}
         onClick={handleNextDate}
       />

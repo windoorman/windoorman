@@ -48,16 +48,14 @@ const ProgressGraph = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch sensor data when sensor or range changes
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchSensorRecords(1, sensor.value, range.value);
+      const data = await fetchSensorRecords(4, sensor.value, range.value);
       setSensorData(data);
     };
     fetchData();
   }, [sensor, range]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: { target: any }) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -78,14 +76,14 @@ const ProgressGraph = () => {
     }>
   ) => {
     setSensor(selectedSensor);
-    setDropdownOpen(false); // Close dropdown after selection
+    setDropdownOpen(false);
   };
 
   const chartData = {
     labels: sensorData.map((record) => record.timestamp),
     datasets: [
       {
-        label: `${sensor.label} (${sensor.unit})`, // Add the unit to the label
+        label: `${sensor.label} (${sensor.unit})`,
         data: sensorData.map((record) => record.value),
         borderColor: "rgba(75,192,192,1)",
         borderWidth: 1,
@@ -97,7 +95,6 @@ const ProgressGraph = () => {
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between mb-4">
-        {/* Sensor dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen((prev) => !prev)}
@@ -140,7 +137,6 @@ const ProgressGraph = () => {
         </div>
       </div>
 
-      {/* Chart */}
       <div className="mt-6">
         <Line
           data={chartData}
@@ -153,7 +149,7 @@ const ProgressGraph = () => {
               tooltip: {
                 callbacks: {
                   label: (context) =>
-                    `${context.dataset.label}: ${context.raw} ${sensor.unit}`, // Add unit in tooltip
+                    `${context.dataset.label}: ${context.raw} ${sensor.unit}`,
                 },
               },
             },

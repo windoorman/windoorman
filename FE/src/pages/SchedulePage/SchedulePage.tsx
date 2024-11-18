@@ -1,19 +1,27 @@
-import ScheduleList from "../../components/schedule/ScheduleList";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ScheduleList from "../../components/schedule/ScheduleList";
 import useScheduleStore from "../../stores/useScheduleStore";
-import { useEffect } from "react";
+import SyncLoader from "react-spinners/SyncLoader"; // 로딩 스피너 임포트
 
-const schedulePage = () => {
+const SchedulePage = () => {
   const navigate = useNavigate();
   const navigateSelect = () => {
     // 일정 등록 페이지로 이동
     navigate("/schedule/select");
   };
 
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
+
   useEffect(() => {
     // 일정 목록 가져오기
-    useScheduleStore.getState().fetchSchedules();
+    const fetchData = async () => {
+      await useScheduleStore.getState().fetchSchedules();
+      setIsLoading(false); // 로딩 완료 시 로딩 상태 업데이트
+    };
+    fetchData();
   }, []);
+
   return (
     <div>
       <div className="mt-2 p-8 pb-4">
@@ -21,9 +29,17 @@ const schedulePage = () => {
           일정
         </span>
       </div>
-      <div>
-        <ScheduleList />
-      </div>
+      {isLoading ? (
+        // 로딩 중일 때 로딩 스피너 표시
+        <div className="flex justify-center items-center">
+          <SyncLoader color="#3752A6" />
+        </div>
+      ) : (
+        // 로딩이 완료되면 ScheduleList 컴포넌트 표시
+        <div>
+          <ScheduleList />
+        </div>
+      )}
       <div>
         <div className="fixed bottom-32 left-1/3">
           <button
@@ -39,4 +55,5 @@ const schedulePage = () => {
     </div>
   );
 };
-export default schedulePage;
+
+export default SchedulePage;
