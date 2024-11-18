@@ -1,6 +1,6 @@
 import time
 import torch
-from utils import load_config, get_mac_address
+from utils import load_config, get_mac_address, calculate_date
 from elasticsearch_client import ElasticsearchClient
 from live_anomaly_detection import check_and_actuate_window
 from springboot_client import send_window_action_to_springboot, get_window_status
@@ -52,13 +52,14 @@ if __name__ == "__main__":
     
     config = load_config(config_dir)
     es_client = ElasticsearchClient(config)
-    index_name = config["elasticsearch"]["index_name"]
+    # index_name = config["elasticsearch"]["index_name"]
     springboot_url = config["springboot"]["url"]
     open_url = config["springboot"]["open_url"]
     close_url = config["springboot"]["close_url"]
     status_url = config["springboot"]["status_url"]
     windows_id = config["springboot"]["windows_id"]
-    
+    index_name = calculate_date(windows_id, config["springboot"]["home_id"])
+
     # Raspberry Pi의 MAC 주소 가져오기
     mac_address = get_mac_address()
 

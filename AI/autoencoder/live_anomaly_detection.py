@@ -88,7 +88,7 @@ def calculate_difference(current_data, previous_data):
     """직전 데이터와 현재 데이터의 차이 계산"""
     return {sensor: current_data[sensor] - previous_data[sensor] for sensor in current_data}
 
-def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_data, outdoor_raw):
+def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_data, indoor_raw, outdoor_raw):
     global window_open, hold_mask_indoor, hold_mask_outdoor, indoor_origin_cause, previous_data, previous_time
 
     influencing_sensors = []
@@ -167,11 +167,11 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     previous_time = current_time
 
     # 온도에따라 문열기
-    if hold_mask_outdoor == 0 and hold_mask_indoor == 0 and outdoor_raw["temperature"] >= 26:
+    if hold_mask_outdoor == 0 and hold_mask_indoor == 0 and indoor_raw["temperature"] > 26:
         print("[ACCIDENT] SO HOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(f"CURR_TEMP: {outdoor_raw['temperature']}")
+        print(f"CURR_TEMP: {indoor_raw['temperature']}")
         window_open = True
-    if hold_mask_outdoor == 0 and hold_mask_indoor == 0:
+    elif hold_mask_outdoor == 0 and hold_mask_indoor == 0:
         print("[ACCIDENT] CONDITION IS GOOD!!!!!")
         window_open = False
 
@@ -231,7 +231,7 @@ def check_and_actuate_window(indoor_data, outdoor_data, previous_data=None):
     print(f"{indoor_anomalies}    {outdoor_anomalies}")
     print(f"{indoor_anomaly_mask}    {outdoor_anomaly_mask}")
 
-    window_status, action, influencing_sensors = determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, {"indoor": indoor_data, "outdoor": outdoor_data}, outdoor_raw)
+    window_status, action, influencing_sensors = determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, {"indoor": indoor_data, "outdoor": outdoor_data}, indoor_raw, outdoor_raw)
     print("\n창문 상태:", action)
     print("영향을 미친 센서들:", influencing_sensors)
     print(f"실내 비트마스크: {bin(indoor_anomaly_mask)}, 실외 비트마스크: {bin(outdoor_anomaly_mask)}")
