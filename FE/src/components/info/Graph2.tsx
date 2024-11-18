@@ -30,7 +30,7 @@ interface Ela {
   humid: number;
   temp: number;
   co2: number;
-  tvoc: number; // tvoc 필드 추가
+  tvoc: number;
   timestamp: string;
   isInside: number;
 }
@@ -66,11 +66,11 @@ export const options = {
 };
 
 export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
-  const [inDataSet, setInDataSet] = useState<Config>();
-  const [outDataSet, setOutDataSet] = useState<Config>();
+  const [inDataSet, setInDataSet] = useState<Config | null>(null);
+  const [outDataSet, setOutDataSet] = useState<Config | null>(null);
 
   useEffect(() => {
-    if (data && reason) {
+    if (data) {
       const maxDataPoints = 100;
 
       // 데이터 필터링 및 제한
@@ -80,6 +80,9 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
       const filteredOutData = data
         .filter((entry) => entry.isInside === 0)
         .slice(-maxDataPoints);
+
+      // reason이 빈 문자열이면 'eco2'로 설정
+      const selectedReason = reason !== "" ? reason : "eco2";
 
       // 내부 데이터셋 구성
       const inDatasetConfig = {
@@ -125,7 +128,7 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
           color: "rgb(153, 102, 255)",
           bgColor: "rgba(153, 102, 255, 0.5)",
         },
-      }[reason];
+      }[selectedReason];
 
       // 외부 데이터셋 구성
       const outDatasetConfig = {
@@ -171,10 +174,10 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
           color: "rgb(153, 102, 255)",
           bgColor: "rgba(153, 102, 255, 0.5)",
         },
-      }[reason];
+      }[selectedReason];
 
-      setInDataSet(inDatasetConfig);
-      setOutDataSet(outDatasetConfig);
+      setInDataSet(inDatasetConfig || null);
+      setOutDataSet(outDatasetConfig || null);
     }
   }, [data, reason]);
 
