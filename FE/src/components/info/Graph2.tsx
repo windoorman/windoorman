@@ -118,7 +118,7 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
           color: "rgb(255, 159, 64)",
           bgColor: "rgba(255, 159, 64, 0.5)",
         },
-        tvoc: {
+        voc: {
           label: "TVOC Levels (Inside)",
           data: filteredInData.map((entry) => entry.tvoc),
           labels: filteredInData.map((entry) => entry.timestamp),
@@ -164,7 +164,7 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
           color: "rgb(255, 159, 64)",
           bgColor: "rgba(255, 159, 64, 0.5)",
         },
-        tvoc: {
+        voc: {
           label: "TVOC Levels (Outside)",
           data: filteredOutData.map((entry) => entry.tvoc),
           labels: filteredOutData.map((entry) => entry.timestamp),
