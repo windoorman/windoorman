@@ -154,12 +154,16 @@ class WindowControlEnvRL:
         self.state = np.random.rand(6) * 100
 
         ekf_penalty = ekf_error * 0.1
+
+        # 급격한 악화 시 창문을 여는 경우 보상
         if action == 1:
             reward = 1 - ekf_penalty
             self.window_open = True
+        # 창문을 닫는 경우 보상
         elif action == 0:
             reward = 1 - ekf_penalty
             self.window_open = False
+        # 잘못된 선택을 한 경우 패널티 부여
         else:
             reward = -1 - ekf_penalty
 

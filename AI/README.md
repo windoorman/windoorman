@@ -26,15 +26,21 @@
 라즈베리파이에서 Python과 pip가 설치되어 있는지 확인합니다.
 
 ```bash
-sudo apt update
-sudo apt install python3-pip libatlas-base-dev
+pip show python
 ```
 
 #### 2. 🐍 프로젝트 클론 및 Conda 환경 설정
 
 ```bash
-git clone https://github.com/your-repo/raspberry-pi-window-control.git
-cd raspberry-pi-window-control
+https://lab.ssafy.com/s11-final/S11P31B107.git
+
+conda create -n window python=3.10 -y
+conda activate window
+pip install torch torchvision torchaudio
+
+pip install tensorflow==2.10.0
+pip install pandas numpy==1.23.5 scikit-learn shap tqdm gym
+pip install PyYAML elasticsearch
 ```
 
 #### 3. 🔥 PyTorch 설치
@@ -42,7 +48,10 @@ cd raspberry-pi-window-control
 라즈베리파이에서 PyTorch를 설치하려면 ARM 아키텍처에 맞는 휠 파일을 사용해야 합니다. 아래는 PyTorch 1.9.0 설치 예시입니다. (필요에 따라 최신 버전을 선택할 수 있습니다)
 
 ```bash
-pip3 install torch-1.9.0-cp37-cp37m-linux_armv7l.whl
+wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-aarch64.sh
+bash Miniforge3-Linux-aarch64.sh
+
+source ~/.bashrc
 ```
 
 #### 4. 📦 프로젝트 종속성 설치
@@ -50,7 +59,9 @@ pip3 install torch-1.9.0-cp37-cp37m-linux_armv7l.whl
 프로젝트에 필요한 패키지를 설치합니다.
 
 ```bash
-pip3 install -r requirements.txt
+cd S11P31B107
+cd AI
+pip install -r requirements.txt
 ```
 
 #### 5. 🏋️ Autoencoder 모델 학습
@@ -58,7 +69,8 @@ pip3 install -r requirements.txt
 라즈베리파이의 성능 제한으로 학습은 다른 고성능 컴퓨터에서 수행한 후, 학습된 모델(`trained_autoencoder_korea.pth`)을 라즈베리파이로 전송합니다. 학습은 다음 명령으로 수행할 수 있습니다.
 
 ```bash
-python3 train_autoencoder.py
+cd autoencoder
+python diff_train.py
 ```
 
 #### 6. 🏠 실시간 창문 제어 시스템 실행
@@ -66,7 +78,7 @@ python3 train_autoencoder.py
 라즈베리파이에서 `main.py`를 실행하여 실시간 센서 데이터 감지 및 창문 제어 시스템을 시작합니다.
 
 ```bash
-python3 main.py
+python diff_main.py
 ```
 
 ---
