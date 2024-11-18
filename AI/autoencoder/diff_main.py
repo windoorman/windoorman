@@ -35,7 +35,8 @@ def main_loop(es_client, index_name, springboot_url, mac_address, open_url, clos
         current_window_status, issues = check_and_actuate_window(indoor_data, outdoor_data, previous_data)
         window_server_status = get_window_status(mac_address, status_url, windows_id)
         # 창문 상태가 변경되었을 경우에만 서버로 전송
-        if current_window_status != previous_window_status or current_window_status != window_server_status:
+        # if current_window_status != previous_window_status or current_window_status != window_server_status:
+        if window_server_status == None or current_window_status != window_server_status:
             action = "open" if current_window_status == WindowAction.OPEN else "close"
             send_window_action_to_springboot(mac_address, action, issues, springboot_url, open_url, close_url, windows_id)
             previous_window_status = current_window_status

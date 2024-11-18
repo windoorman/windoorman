@@ -45,19 +45,6 @@ previous_data = {"indoor": None, "outdoor": None}
 previous_time = time.time()
 
 
-# def generate_bitmask(sensor_values, anomalies, thresholds):
-#     bitmask = 0b0
-#     for i, (sensor, value) in enumerate(sensor_values.items()):
-#         bit_position = i * 2
-#         if value > thresholds[sensor]:  # 임계치 초과 상태
-#             bitmask |= 0b01 << bit_position
-#             print(f"[DEBUG] {sensor} value {value} exceeds threshold {thresholds[sensor]} (bitmask set to 0b01)")
-#         if anomalies[sensor]:  # 재구성 오류로 인한 이상 상태
-#             bitmask |= 0b11 << bit_position
-#             print(f"[DEBUG] {sensor} anomaly detected, setting bitmask to 0b11")
-#     return bitmask
-
-
 # 학습 데이터에서 미리 계산한 평균 및 표준편차
 sensor_means = {
     "temperature": 20,
@@ -149,7 +136,7 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     indoor_11_count = sum(((updated_indoor_mask >> (i * 2)) & 0b11) == 0b11 for i in range(6))
     outdoor_11_count = sum(((updated_outdoor_mask >> (i * 2)) & 0b11) == 0b11 for i in range(6))
 
-    if indoor_11_count > outdoor_11_count:
+    if indoor_11_count >= outdoor_11_count:
         if not window_open:
             window_open = True
             action = "창문 열림 (실내 `0b11` 상태 우세)"
@@ -166,16 +153,16 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     previous_data["outdoor"] = current_data["outdoor"]
     previous_time = current_time
 
-    # 온도에따라 문열기
-    if hold_mask_outdoor == 0 and hold_mask_indoor == 0 and indoor_raw["temperature"] > 26:
-        print("[ACCIDENT] SO HOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(f"CURR_TEMP: {indoor_raw['temperature']}")
-        window_open = True
-    elif hold_mask_outdoor == 0 and hold_mask_indoor == 0:
-        print("[ACCIDENT] CONDITION IS GOOD!!!!!")
-        window_open = False
+    # # 온도에따라 문열기
+    # if hold_mask_outdoor == 0 and hold_mask_indoor == 0 and indoor_raw["temperature"] > 26:
+    #     print("[ACCIDENT] SO HOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    #     print(f"CURR_TEMP: {indoor_raw['temperature']}")
+    #     window_open = True
+    # elif hold_mask_outdoor == 0 and hold_mask_indoor == 0:
+    #     print("[ACCIDENT] CONDITION IS GOOD!!!!!")
+    #     window_open = False
 
-    print(f"[DEBUG] Window action: {action}, Influencing sensors: {influencing_sensors}")
+    # print(f"[DEBUG] Window action: {action}, Influencing sensors: {influencing_sensors}")
     return window_open, action, influencing_sensors
 
 import json
@@ -228,11 +215,11 @@ def check_and_actuate_window(indoor_data, outdoor_data, previous_data=None):
     else:
         indoor_anomaly_mask = generate_bitmask(indoor_data, indoor_anomalies, THRESHOLD, "in")
         outdoor_anomaly_mask = generate_bitmask(outdoor_data, outdoor_anomalies, THRESHOLD, "out")
-    print(f"{indoor_anomalies}    {outdoor_anomalies}")
-    print(f"{indoor_anomaly_mask}    {outdoor_anomaly_mask}")
+    # print(f"{indoor_anomalies}    {outdoor_anomalies}")
+    # print(f"{indoor_anomaly_mask}    {outdoor_anomaly_mask}")
 
     window_status, action, influencing_sensors = determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, {"indoor": indoor_data, "outdoor": outdoor_data}, indoor_raw, outdoor_raw)
-    print("\n창문 상태:", action)
+    print("\n창문 상태:", window_status)
     print("영향을 미친 센서들:", influencing_sensors)
     print(f"실내 비트마스크: {bin(indoor_anomaly_mask)}, 실외 비트마스크: {bin(outdoor_anomaly_mask)}")
 

@@ -25,7 +25,7 @@ def detect_anomaly(data, model, thresholds):
     with torch.no_grad():
         reconstructed_data = model(input_data)
 
-    print(f"inco:{input_data}  deco:{reconstructed_data}")
+    # print(f"inco:{input_data}  deco:{reconstructed_data}")
     reconstruction_error = (input_data - reconstructed_data).abs().cpu().numpy()
     anomalies = {sensor: error > thresholds[sensor] for sensor, error in zip(thresholds.keys(), reconstruction_error[0])}
     return anomalies
