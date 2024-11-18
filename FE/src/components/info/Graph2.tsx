@@ -30,7 +30,7 @@ interface Ela {
   humid: number;
   temp: number;
   co2: number;
-  tvoc: number;
+  tvoc: number; // tvoc 필드 추가
   timestamp: string;
   isInside: number;
 }
@@ -73,7 +73,7 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
     if (data && reason) {
       const maxDataPoints = 100;
 
-      // useEffect 내부에서 필터링 후 데이터 제한
+      // 데이터 필터링 및 제한
       const filteredInData = data
         .filter((entry) => entry.isInside === 1)
         .slice(-maxDataPoints);
@@ -81,6 +81,7 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
         .filter((entry) => entry.isInside === 0)
         .slice(-maxDataPoints);
 
+      // 내부 데이터셋 구성
       const inDatasetConfig = {
         eco2: {
           label: "CO2 Levels (Inside)",
@@ -117,8 +118,16 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
           color: "rgb(255, 159, 64)",
           bgColor: "rgba(255, 159, 64, 0.5)",
         },
+        tvoc: {
+          label: "TVOC Levels (Inside)",
+          data: filteredInData.map((entry) => entry.tvoc),
+          labels: filteredInData.map((entry) => entry.timestamp),
+          color: "rgb(153, 102, 255)",
+          bgColor: "rgba(153, 102, 255, 0.5)",
+        },
       }[reason];
 
+      // 외부 데이터셋 구성
       const outDatasetConfig = {
         eco2: {
           label: "CO2 Levels (Outside)",
@@ -154,6 +163,13 @@ export const Graph2: React.FC<Graph2Props> = ({ data, reason }) => {
           labels: filteredOutData.map((entry) => entry.timestamp),
           color: "rgb(255, 159, 64)",
           bgColor: "rgba(255, 159, 64, 0.5)",
+        },
+        tvoc: {
+          label: "TVOC Levels (Outside)",
+          data: filteredOutData.map((entry) => entry.tvoc),
+          labels: filteredOutData.map((entry) => entry.timestamp),
+          color: "rgb(153, 102, 255)",
+          bgColor: "rgba(153, 102, 255, 0.5)",
         },
       }[reason];
 
