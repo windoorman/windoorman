@@ -76,7 +76,7 @@ public class ScheduleService {
                         .startTime(schedule.getStartTime())
                         .endTime(schedule.getEndTime())
                         .days(new ArrayList<>())
-                        .isActivate(schedule.isActivate())
+                        .isActivate(schedule.getScheduleGroup().isActivate())
                         .build();
                 scheduleMap.put(schedule.getScheduleGroup().getId(), dto);
             }

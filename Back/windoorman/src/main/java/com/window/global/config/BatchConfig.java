@@ -1,8 +1,6 @@
 package com.window.global.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.window.domain.schedule.dto.ScheduleRedisDto;
 import com.window.domain.schedule.entity.Schedule;
@@ -12,17 +10,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.JdbcCursorItemReader;
-import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.Order;
+import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -47,7 +49,9 @@ public class BatchConfig {
     private final DataSource dataSource;
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
-    private final RedisTemplate<String, ScheduleRedisDto> scheduleRedisTemplate;;
+    private final RedisTemplate<String, ScheduleRedisDto> scheduleRedisTemplate;
+    private final ThreadPoolTaskExecutor asyncExecutor;
+
 
     @Value("${smartthings.secret}")
     private String smartThingsSecret;
@@ -60,6 +64,7 @@ public class BatchConfig {
     @Bean
     public Job startTimeJob() {
         return new JobBuilder("startTimeJob", jobRepository)
+                .incrementer(new RunIdIncrementer())
                 .start(startTimeStep())
                 .build();
     }
@@ -70,24 +75,28 @@ public class BatchConfig {
                 .<Schedule, Schedule>chunk(100, transactionManager)
                 .reader(startTimeReader())
                 .writer(startTimeWriter())
+                .taskExecutor(asyncExecutor)
+                .allowStartIfComplete(true) // 재실행 허용
                 .build();
     }
 
+
     @Bean
-    public JdbcCursorItemReader<Schedule> startTimeReader() {
-        return new JdbcCursorItemReaderBuilder<Schedule>()
-                .name("jdbcCursorItemReader")
-                .fetchSize(100)
-                .sql("SELECT s.id, s.start_time, s.end_time, w.id as windows_id, w.device_id " +
-                        "FROM schedule s left JOIN windows w ON s.windows_id = w.id " +
-                        "JOIN schedule_group sg ON s.group_id = sg.id " +
-                        "where sg.is_activate = true and DATE_FORMAT(s.start_time, '%H:%i') = ? and s.day = ?")
-                .preparedStatementSetter(ps -> {
-                    String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-                    String day = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
-                    ps.setString(1, currentTime);
-                    ps.setString(2, day);
-                })
+    @StepScope
+    public JdbcPagingItemReader<Schedule> startTimeReader() {
+        Map<String, Order> sortKeys = new HashMap<>();
+        sortKeys.put("s.id", Order.ASCENDING); // 기본 정렬 키
+        log.info("수행");
+        return new JdbcPagingItemReaderBuilder<Schedule>()
+                .name("jdbcPagingItemReader")
+                .dataSource(dataSource)
+                .fetchSize(100) // 한 번에 읽을 데이터 크기
+                .selectClause("SELECT s.id, s.start_time, s.end_time, w.id AS windows_id, w.device_id")
+                .fromClause("FROM schedule s LEFT JOIN windows w ON s.windows_id = w.id " +
+                        "JOIN schedule_group sg ON s.group_id = sg.id")
+                .whereClause("WHERE sg.is_activate = true AND DATE_FORMAT(s.start_time, '%H:%i') = :currentTime AND s.day = :day")
+                .sortKeys(sortKeys)
+                .parameterValues(parameterValues()) // 파라미터 전달
                 .rowMapper((rs, rowNum) -> {
                     Windows window = Windows.builder()
                             .id(rs.getLong("windows_id"))
@@ -100,8 +109,19 @@ public class BatchConfig {
                             .windows(window)
                             .build();
                 })
-                .dataSource(dataSource)
                 .build();
+    }
+
+    private Map<String, Object> parameterValues() {
+        String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+        String day = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.NARROW, Locale.KOREAN);
+        log.info("currentTime: {}", currentTime);
+        log.info("day: {}", day);
+        Map<String, Object> params = new HashMap<>();
+        params.put("currentTime", currentTime);
+        params.put("day", day);
+
+        return params;
     }
 
 
@@ -121,6 +141,7 @@ public class BatchConfig {
             }
             """;
             for(Schedule schedule : items) {
+                log.info("scheduleId: {}",schedule.getId());
                 Windows window = schedule.getWindows();
                 redisTemplate.opsForSet().add(redisSetKey, String.valueOf(window.getId()));
                 String deviceId = window.getDeviceId();
@@ -180,6 +201,7 @@ public class BatchConfig {
                 .<ScheduleRedisDto, ScheduleRedisDto>chunk(100, transactionManager)
                 .reader(endTimeReader())
                 .writer(endTimeWriter())
+                .taskExecutor(asyncExecutor)
                 .build();
     }
 
