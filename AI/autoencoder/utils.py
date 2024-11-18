@@ -1,6 +1,7 @@
 import yaml
 import uuid
 from enums import AnomalyStatus
+from datetime import datetime, timedelta
 
 # 센서 임계값 설정
 sensor_thresholds = {
@@ -109,3 +110,28 @@ def get_mac_address():
     return mac_address
 
 
+def calculate_date(window_id: int, home_id: int, base_date_str: str = "2024.11.18"):
+    """
+    주어진 기준 날짜에서 특정 일수를 빼서 window_id.home_id.날짜 형식으로 반환합니다.
+
+    Args:
+        window_id (int): 윈도우 ID.
+        home_id (int): 홈 ID.
+        base_date_str (str): 기준 날짜 (기본값: "2024.11.18").
+
+    Returns:
+        str: 계산된 문자열 (window_id.home_id.날짜 형식).
+    """
+    # 기준 날짜 생성
+    base_date = datetime.strptime(base_date_str, "%Y.%m.%d")
+
+    # 결과 문자열 생성
+    return f"{window_id}-{home_id}-{base_date.strftime('%Y.%m.%d')}"
+
+
+# 모듈 테스트 (직접 실행 시 작동)
+if __name__ == "__main__":
+    window_id = 1
+    home_id = 2
+    result = calculate_date(window_id, home_id)
+    print(result)
