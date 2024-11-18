@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/icons/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="/icons/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="/icons/favicon-128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="196x196"
+      href="/icons/favicon-196x196.png"
+    />
+    <!-- Microsoft-specific (msapplication) for Windows tiles -->
+    <meta name="msapplication-TileImage" content="/icons/mstile-128x128.png" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta
+      name="msapplication-square150x150logo"
+      content="/icons/mstile-270x270.png"
+    />
+    <meta
+      name="msapplication-wide310x150logo"
+      content="/icons/mstile-558x270.png"
+    />
+    <meta
+      name="msapplication-square310x310logo"
+      content="/icons/mstile-558x558.png"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>WindoorMan</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        // Register a service worker hosted at the root of the
+        // site using the default scope.
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((registration) => {
+            console.log("Service worker registration succeeded:", registration);
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+            console.log("정수는 귀여움 1등!! 뿌뿌>_ <");
+          })
+          .catch((err) => {
+            console.log("Service worker registration failed:", error);
+          });
+      } else {
+        console.log("Service workers are not supported.");
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e0aca00eed76f6aeba7edb4db6827b39&autoload=false"
+    ></script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e0aca00eed76f6aeba7edb4db6827b39&libraries=services,clusterer,drawing"
+    ></script>
+  </body>
+</html>
