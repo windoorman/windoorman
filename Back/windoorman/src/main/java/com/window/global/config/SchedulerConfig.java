@@ -7,6 +7,9 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@EnableScheduling
 public class SchedulerConfig {
 
     private final ElasticReportService elasticReportService;
@@ -30,16 +34,30 @@ public class SchedulerConfig {
     }
 
     @Scheduled(cron = "0 * * * * *")
-    public void launchJob() {
-        log.info("job");
+    public void launchJobs() {
+        launchStartTimeJob();
+        launchEndTimeJob();
+    }
+
+    @Async("asyncExecutor")
+    public void launchStartTimeJob() {
+        log.info("Start Job");
         try{
-            // `startTimeJob`에 고유한 매개변수 추가
             JobParameters startTimeJobParams = new JobParametersBuilder()
                     .addLong("startJobTime", System.currentTimeMillis())
                     .toJobParameters();
             jobLauncher.run(startTimeJob, startTimeJobParams);
+            log.info("startTimeJob 실행 완료");
 
-//             `endTimeJob`에 고유한 매개변수 추가
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Async("asyncExecutor")
+    public void launchEndTimeJob() {
+        log.info("End Job");
+        try{
             JobParameters endTimeJobParams = new JobParametersBuilder()
                     .addLong("endJobTime", System.currentTimeMillis())
                     .toJobParameters();
