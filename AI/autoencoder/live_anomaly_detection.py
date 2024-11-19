@@ -136,7 +136,7 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     indoor_11_count = sum(((updated_indoor_mask >> (i * 2)) & 0b11) == 0b11 for i in range(6))
     outdoor_11_count = sum(((updated_outdoor_mask >> (i * 2)) & 0b11) == 0b11 for i in range(6))
 
-    if indoor_11_count >= outdoor_11_count:
+    if indoor_11_count >= outdoor_11_count and (indoor_11_count+outdoor_11_count != 0):
         if not window_open:
             window_open = True
             action = "창문 열림 (실내 `0b11` 상태 우세)"
@@ -161,7 +161,9 @@ def determine_window_action(indoor_anomaly_mask, outdoor_anomaly_mask, current_d
     # elif hold_mask_outdoor == 0 and hold_mask_indoor == 0:
     #     print("[ACCIDENT] CONDITION IS GOOD!!!!!")
     #     window_open = False
-
+    if hold_mask_outdoor == 0 and hold_mask_indoor == 0:
+        print("CONDITION IS GOOD")
+        window_open = False
     # print(f"[DEBUG] Window action: {action}, Influencing sensors: {influencing_sensors}")
     return window_open, action, influencing_sensors
 
