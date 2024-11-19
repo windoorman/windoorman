@@ -20,10 +20,10 @@
   <table style="width: 100%;">
     <tr>
       <td style="text-align: center; width: 50%;">
-        <img src="docs_assets/setting.gif" alt="예약 설정" style="width: 80%; height: auto; max-height: 300px;">
+        <img src="docs_assets/setting.gif" alt="예약 설정" style="width: 80%; height: auto; max-height: 200px;">
       </td>
       <td style="text-align: center; width: 50%;">
-        <img src="docs_assets/open.gif" alt="실제 동작" style="width: 80%; height: auto; max-height: 300px;">
+        <img src="docs_assets/open.gif" alt="실제 동작" style="width: 80%; height: auto; max-height: 200px;">
       </td>
     </tr>
   </table>
