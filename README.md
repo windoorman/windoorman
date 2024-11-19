@@ -36,11 +36,11 @@
 ---
 
 - **실시간 공기질 모니터링 및 그래프 확인**  
-  <img src="docs_assets/graph.gif" alt="공기질 모니터링" style="height: 300px;">
+  <img src="docs_assets/graph.gif" alt="공기질 모니터링" style="height: 200px;">
 ---
 
 - **이상치 감지 및 대처 기록 확인**  
-  <img src="docs_assets/result-page.gif" alt="이상치 기록" style="height: 300px;">
+  <img src="docs_assets/result-page.gif" alt="이상치 기록" style="height: 200px;">
 ---
 
 ## 👥 팀원 소개
