@@ -17,15 +17,15 @@
 ---
 
 - **사용자 맞춤 스케줄링 서비스**  
-  <div style="display: flex;">
-    <div style="margin-right: 10px;">
-      <img src="docs_assets/setting.gif" alt="예약 설정" style="width: 200px;">
+  <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+    <div style="flex: 1; max-width: 48%; margin-bottom: 10px;">
+      <img src="docs_assets/setting.gif" alt="예약 설정" style="width: 100%; height: auto;">
     </div>
-    <div>
-      <img src="docs_assets/open.gif" alt="실제 동작" style="width: 200px;">
+    <div style="flex: 1; max-width: 48%;">
+      <img src="docs_assets/open.gif" alt="실제 동작" style="width: 100%; height: auto;">
     </div>
   </div>
-  
+
 ---
 
 - **로그 데이터 분산 적재**  
