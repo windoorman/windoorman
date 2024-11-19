@@ -58,6 +58,8 @@ public class WindowActionService {
         Windows windows = windowsRepository.findById(dto.getWindowsId())
                 .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_WINDOWS_EXCEPTION));
 
+        if(!windows.isAuto()) return null;
+
         String sensors = dto.getReason().stream()
                 .map(ReasonDto::getSensor)
                 .collect(Collectors.joining(","));
