@@ -17,7 +17,7 @@
 ---
 
 - **사용자 맞춤 스케줄링 서비스**  
-  <div style="display: flex;"> <div style="margin-right: 10px;"> <img src="docs_assets/setting.gif" alt="예약 설정" style="max-width: 100%;"> </div> <div> <img src="docs_assets/open.gif" alt="실제 동작" style="max-width: 30%;"> </div> </div>
+  <div style="display: flex;"> <div style="margin-right: 10px;"> <img src="docs_assets/setting.gif" alt="예약 설정" style="max-width: 30%;"> </div> <div> <img src="docs_assets/open.gif" alt="실제 동작" style="max-width: 30%;"> </div> </div>
 
 ---
 
