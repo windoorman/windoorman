@@ -122,7 +122,7 @@ const WindowStatus: React.FC<WindowStatusProps> = ({ placeId, reportDate }) => {
       )}
 
       {/* 창문 상태 표시 및 그래프 표시 */}
-      <div className="bg-gray-50 rounded-lg mt-4  max-h-72 overflow-y-auto">
+      <div className="bg-gray-50 rounded-lg mt-4  max-h-64 overflow-y-auto">
         {windowStates.map((record) => (
           <div key={record.actionReportId}>
             <div
