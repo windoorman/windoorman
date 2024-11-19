@@ -84,7 +84,7 @@ const WindowStatus: React.FC<WindowStatusProps> = ({ placeId, reportDate }) => {
   };
 
   return (
-    <div className="mt-6 relative max-h-80 y-scroll-auto">
+    <div className="mt-6 relative max-h-80 overflow-y-auto">
       {/* 창문 선택 드롭다운 */}
       <div
         onClick={toggleDropdown}
