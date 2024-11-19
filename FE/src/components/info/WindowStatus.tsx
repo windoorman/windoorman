@@ -84,7 +84,7 @@ const WindowStatus: React.FC<WindowStatusProps> = ({ placeId, reportDate }) => {
   };
 
   return (
-    <div className="mt-6 relative max-h-80 overflow-y-auto">
+    <div className="mt-6 relative">
       {/* 창문 선택 드롭다운 */}
       <div
         onClick={toggleDropdown}
@@ -122,7 +122,7 @@ const WindowStatus: React.FC<WindowStatusProps> = ({ placeId, reportDate }) => {
       )}
 
       {/* 창문 상태 표시 및 그래프 표시 */}
-      <div className="bg-gray-50 rounded-lg mt-4">
+      <div className="bg-gray-50 rounded-lg mt-4  max-h-72 overflow-y-auto">
         {windowStates.map((record) => (
           <div key={record.actionReportId}>
             <div
