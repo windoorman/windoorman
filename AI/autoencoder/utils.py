@@ -123,7 +123,8 @@ def calculate_date(window_id: int, home_id: int, base_date_str: str = "2024.11.1
         str: 계산된 문자열 (window_id.home_id.날짜 형식).
     """
     # 기준 날짜 생성
-    base_date = datetime.strptime(base_date_str, "%Y.%m.%d")
+    base_date = datetime.now()
+    # base_date = datetime.strptime(base_date_str, "%Y.%m.%d")
 
     # 결과 문자열 생성
     return f"{window_id}-{home_id}-{base_date.strftime('%Y.%m.%d')}"
