@@ -13,8 +13,8 @@ export interface Home {
 interface HomeState {
   homes: Home[];
   defaultHome: Home | null;
-  selectedHome: Home | null; // 선택된 홈
-  setSelectedHome: (home: Home) => void; // 선택된 홈 설정 함수 추가
+  selectedHome: Home | null;
+  setSelectedHome: (home: Home) => void;
   fetchHomes: () => Promise<void>;
   resetHomes: () => void;
   RegistHome: (home: Home) => Promise<void>;
@@ -22,12 +22,12 @@ interface HomeState {
   deleteHome: (homeId: number) => Promise<void>;
 }
 
-const useHomeStore = create<HomeState>((set) => ({
+const useHomeStore = create<HomeState>((set, get) => ({
   homes: [],
   defaultHome: null,
   selectedHome: null,
 
-  setSelectedHome: (home: Home) => set({ selectedHome: home }), // 선택된 홈 설정 함수
+  setSelectedHome: (home: Home) => set({ selectedHome: home }),
 
   fetchHomes: async () => {
     try {
@@ -36,11 +36,11 @@ const useHomeStore = create<HomeState>((set) => ({
         nickname: string;
       }>("/places");
       set({ homes: response.data.placeDtoList });
-      // 유저네임 설정
+      // Set username
       useUserStore.getState().setUserName(response.data.nickname);
       set((state) => {
         const defaultHome = state.homes.find((home) => home.isDefault) || null;
-        return { defaultHome, selectedHome: defaultHome }; // defaultHome을 selectedHome으로도 설정
+        return { defaultHome, selectedHome: defaultHome };
       });
     } catch (error) {
       console.error("Failed to fetch homes:", error);
@@ -52,11 +52,9 @@ const useHomeStore = create<HomeState>((set) => ({
   RegistHome: async (home: Home) => {
     try {
       const response = await axiosApi.post<Home>("/places", home);
-      set((state) => ({ homes: [...state.homes, home] }));
-      if (home.isDefault) {
-        set((_state) => ({ defaultHome: home, selectedHome: home }));
-      }
       console.log("Registered homeId:", response);
+      // Trigger fetchHomes to update the store with the latest data
+      await get().fetchHomes();
     } catch (error) {
       console.error("Failed to register home:", error);
     }
