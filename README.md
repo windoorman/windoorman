@@ -35,6 +35,14 @@
   ![데이터 시각화](docs_assets/logging.gif)
 ---
 
+- **실시간 공기질 모니터링 및 그래프 확인**  
+  ![공기질 모니터링](docs_assets/graph.gif)
+---
+
+- **이상치 감지 및 대처 기록 확인**  
+  ![이상치 기록](docs_assets/result-page.gif)
+---
+
 ## 👥 팀원 소개
 
 **팀명**: WINDOW11
@@ -65,7 +73,7 @@
   </tr>
   <tr>
     <td style="text-align: center; padding: 10px;">
-      <img src="./docs_assets/LCH.png" alt="이찬호" height="150" width="150" style="border-radius: 50%;"/>
+      <img src="./docs_assets/LCH.jpg" alt="이찬호" height="150" width="150" style="border-radius: 50%;"/>
       <h4>이찬호</h4>
       <p><strong>역할:</strong> IoT, INFRA</p>
       <p><strong>연락처:</strong> leechanho96@naver.com</p>
