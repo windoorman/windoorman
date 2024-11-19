@@ -68,6 +68,7 @@ public class ElasticReportService {
             Place place = placeRepository.findById(byPlaceId)
                     .orElseThrow(() -> new ExceptionResponse(CustomException.NOT_FOUND_PLACE_EXCEPTION));
 
+            log.info("localDate: {}", localDate);
             Report report = Report.builder()
                     .place(place)
                     .highTemperature(maxTemp)
@@ -77,6 +78,8 @@ public class ElasticReportService {
                     .reportDate(localDate)
                     .build();
             reportRepository.save(report);
+
+            log.info("report: {}", report);
         }
     }
 }

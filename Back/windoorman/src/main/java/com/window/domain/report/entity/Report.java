@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
 import java.time.LocalDate;
 
 @Entity
@@ -35,7 +33,6 @@ public class Report extends BaseTimeEntity {
     @Column(name = "air_condition", nullable = false)
     private Double airCondition;
 
-    @CreatedDate
     @Column(name = "report_date", nullable = false, updatable = false)
     private LocalDate reportDate;
 
