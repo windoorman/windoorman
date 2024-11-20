@@ -46,7 +46,7 @@ const CurrentSensor = ({ windowsId }: CurrentSensorProps) => {
             <div className="text-[#5D5D5D]">%</div>
           </div>
           <div className="flex justify-between mb-2">
-            <div className="text-[#B0B0B0]">공기질</div>
+            <div className="text-[#B0B0B0]">Tvoc</div>
             <div className="text-[#3752A6] font-bold">{sensorData[0].voc}</div>
             <div className="text-[#5D5D5D]">ppm</div>
           </div>
