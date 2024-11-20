@@ -129,7 +129,11 @@ const WindowStatus: React.FC<WindowStatusProps> = ({ placeId, reportDate }) => {
               className="flex justify-between items-center py-2 px-4 border-b border-gray-200 cursor-pointer"
               onClick={() => getReportGraph(record.actionReportId)}
             >
-              <span className="text-[#3C4973] font-semibold">
+              <span
+                className={`font-semibold ${
+                  record.open === "열림" ? "text-[#3C4973]" : "text-[#E65B5B]"
+                }`}
+              >
                 {record.open === "열림" ? "창문 열림" : "창문 닫힘"}
               </span>
               <span className="text-gray-500 text-sm">
